@@ -8,7 +8,7 @@ import { SalesGraph } from '@/components/dashboard/SalesGraph';
 import { TopProducts } from '@/components/dashboard/TopProducts';
 import { StockAlerts } from '@/components/dashboard/StockAlerts';
 import { SalesHistoryTable } from '@/components/dashboard/SalesHistoryTable';
-import { BadgeDollarSign, ShoppingCart, Download, CircleDollarSign, Calendar as CalendarIcon, Package, AlertTriangle, TrendingUp } from "lucide-react";
+import { BadgeDollarSign, ShoppingCart, Download, CircleDollarSign, Calendar as CalendarIcon, Package, AlertTriangle, TrendingUp, ChevronLeft, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
