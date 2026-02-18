@@ -7,41 +7,40 @@ interface SalesGraphProps {
 
 export function SalesGraph({ data }: SalesGraphProps) {
     return (
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height={350}>
             <LineChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E0E0E0" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                 <XAxis
                     dataKey="date"
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: '#9AA3B0', fontSize: 12 }}
+                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                     dy={10}
                     tickFormatter={(value) => {
                         const date = new Date(value);
                         return `${date.getDate()}`;
                     }}
-                    interval="preserveStartEnd"
                 />
                 <YAxis
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: '#9AA3B0', fontSize: 12 }}
+                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                     tickFormatter={(value) => `৳${value}`}
                 />
                 <Tooltip
-                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0px 4px 20px rgba(0,0,0,0.1)' }}
-                    itemStyle={{ color: '#0067FD', fontWeight: 'bold' }}
-                    labelStyle={{ color: '#7B7480', marginBottom: '4px' }}
+                    contentStyle={{ borderRadius: '8px', border: '1px solid hsl(var(--border))', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: 'hsl(var(--popover))', color: 'hsl(var(--popover-foreground))' }}
+                    itemStyle={{ color: 'hsl(var(--primary))', fontWeight: 'bold' }}
+                    labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: '4px' }}
                     formatter={(value: number) => [`৳${value.toLocaleString()}`, 'Income']}
                     labelFormatter={(label) => new Date(label).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
                 />
                 <Line
-                    type="linear"
+                    type="monotone"
                     dataKey="total"
-                    stroke="#0067FD"
-                    strokeWidth={3}
-                    dot={{ r: 4, stroke: '#0067FD', strokeWidth: 2, fill: '#FFFFFF' }}
-                    activeDot={{ r: 6, stroke: '#0067FD', strokeWidth: 2, fill: '#0067FD' }}
+                    stroke="hsl(var(--primary))"
+                    strokeWidth={2}
+                    dot={{ r: 4, strokeWidth: 2, fill: 'hsl(var(--background))', stroke: 'hsl(var(--primary))' }}
+                    activeDot={{ r: 6, strokeWidth: 2, fill: 'hsl(var(--primary))', stroke: 'hsl(var(--primary))' }}
                 />
             </LineChart>
         </ResponsiveContainer>
