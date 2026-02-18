@@ -1,7 +1,18 @@
 "use client";
 
-import { Trash2, AlertCircle } from "lucide-react";
+import { Trash2, AlertCircle, ChevronDown, ChevronRight, ShoppingBag } from "lucide-react";
 import { useState } from "react";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface Sale {
     id: number;
@@ -25,14 +36,20 @@ interface SalesHistoryTableProps {
 export function SalesHistoryTable({ sales, onDeleteSale, canEdit = true }: SalesHistoryTableProps) {
     const props = { canEdit };
     const [deletingId, setDeletingId] = useState<number | null>(null);
-    const [expandedId, setExpandedId] = useState<number | null>(null);
+    const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
 
     const toggleExpand = (id: number) => {
-        setExpandedId(prev => prev === id ? null : id);
+        const newExpanded = new Set(expandedIds);
+        if (newExpanded.has(id)) {
+            newExpanded.delete(id);
+        } else {
+            newExpanded.add(id);
+        }
+        setExpandedIds(newExpanded);
     };
 
     const handleDeleteClick = async (e: React.MouseEvent, id: number) => {
-        e.stopPropagation(); // Prevent row click expansion
+        e.stopPropagation();
         if (!confirm("Are you sure you want to delete this sale? Stock will be restored.")) return;
 
         setDeletingId(id);
@@ -51,110 +68,132 @@ export function SalesHistoryTable({ sales, onDeleteSale, canEdit = true }: Sales
         }
     };
 
-    // Helper to format time correctly (assuming server UTC, client Local)
-    const formatTime = (dateStr: string) => {
+    const formatDate = (dateStr: string) => {
         try {
-            // Ensure strict ISO parsing by appending Z if missing (Fix for Timezone issue)
             const isoString = dateStr.endsWith('Z') ? dateStr : `${dateStr}Z`;
-            return new Date(isoString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const date = new Date(isoString);
+            return {
+                date: date.toLocaleDateString(),
+                time: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
         } catch (e) {
-            return "Invalid Date";
+            return { date: "Invalid", time: "" };
         }
     };
 
-    const formatDate = (dateStr: string) => {
-        try {
-            // Ensure strict ISO parsing by appending Z if missing
-            const isoString = dateStr.endsWith('Z') ? dateStr : `${dateStr}Z`;
-            return new Date(isoString).toLocaleDateString();
-        } catch (e) {
-            return "Invalid Date";
-        }
-    }
-
-
     return (
-        <div className="w-full h-full flex flex-col gap-4">
-            {/* Table Header */}
-            <div className="flex flex-row items-center w-full h-[42px] rounded-[13px] bg-[#F8FAFC] px-3 gap-2">
-                <div className="flex-[2] text-[#60758D] font-inter font-medium text-[10px] sm:text-[12px] uppercase tracking-wider truncate">Date & Time</div>
-                <div className="flex-1 text-[#60758D] font-inter font-medium text-[10px] sm:text-[12px] uppercase tracking-wider truncate">Amount</div>
-                <div className="hidden sm:block flex-1 text-[#60758D] font-inter font-medium text-[12px] uppercase tracking-wider">Method</div>
-                <div className="w-[30px] sm:w-[60px] text-right text-[#60758D] font-inter font-medium text-[10px] sm:text-[12px] uppercase tracking-wider">Action</div>
-            </div>
+        <div className="w-full h-full flex flex-col">
+            <div className="rounded-md border">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[30px]"></TableHead>
+                            <TableHead>Date & Time</TableHead>
+                            <TableHead>Method</TableHead>
+                            <TableHead className="text-right">Amount</TableHead>
+                            <TableHead className="w-[50px]"></TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {sales.length > 0 ? (
+                            sales.map((sale) => {
+                                const { date, time } = formatDate(sale.created_at);
+                                const isExpanded = expandedIds.has(sale.id);
 
-            {/* Table Body */}
-            <div className="flex flex-col gap-2 overflow-y-auto flex-1 min-h-0 pr-1 custom-scrollbar">
-                {sales.length > 0 ? (
-                    sales.map((sale) => (
-                        <div key={sale.id} className="flex flex-col border-b border-[#F2F4F5] last:border-0">
-                            {/* Main Row */}
-                            <div
-                                onClick={() => toggleExpand(sale.id)}
-                                className="flex flex-row items-center py-3 px-3 gap-2 hover:bg-gray-50 transition-colors cursor-pointer"
-                            >
-                                <div className="flex-[2] flex flex-col min-w-0">
-                                    <span className="text-[#0C1829] font-inter font-medium text-[12px] sm:text-[14px] truncate">{formatDate(sale.created_at)}</span>
-                                    <span className="text-[#9AA3B0] font-inter text-[10px] sm:text-[12px] truncate">{formatTime(sale.created_at)}</span>
-                                </div>
-                                <div className="flex-1 font-bold text-[#0067FD] text-[12px] sm:text-[14px] truncate">
-                                    ৳{sale.total_amount}
-                                </div>
-                                <div className="hidden sm:block flex-1 text-[#495564] font-inter text-[14px] capitalize truncate">
-                                    {sale.payment_method}
-                                </div>
-                                <div className="w-[30px] sm:w-[60px] flex justify-end">
-                                    {onDeleteSale && (!('canEdit' in props) || props.canEdit) ? (
-                                        <button
-                                            onClick={(e) => handleDeleteClick(e, sale.id)}
-                                            disabled={deletingId === sale.id}
-                                            className="p-2 rounded-full hover:bg-red-50 text-[#9CA3AF] hover:text-red-500 transition-colors"
+                                return (
+                                    <>
+                                        <TableRow
+                                            key={sale.id}
+                                            className="cursor-pointer hover:bg-muted/50 transition-colors"
+                                            onClick={() => toggleExpand(sale.id)}
                                         >
-                                            {deletingId === sale.id ? (
-                                                <div className="w-4 h-4 border-2 border-red-500 border-t-transparent animate-spin rounded-full" />
-                                            ) : (
-                                                <Trash2 size={18} />
-                                            )}
-                                        </button>
-                                    ) : null}
-                                </div>
-                            </div>
-
-                            {/* Expanded Details */}
-                            {expandedId === sale.id && (
-                                <div className="bg-[#F8FAFC] px-4 py-3 rounded-b-[12px] mb-2 mx-2">
-                                    <div className="grid grid-cols-12 gap-2 mb-2 pb-1 border-b border-gray-200 text-[11px] font-bold text-[#64748B] uppercase">
-                                        <div className="col-span-6">Item</div>
-                                        <div className="col-span-2 text-center">Qty</div>
-                                        <div className="col-span-2 text-right">Price</div>
-                                        <div className="col-span-2 text-right">Total</div>
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                        {sale.items && sale.items.length > 0 ? (
-                                            sale.items.map((item, idx) => (
-                                                <div key={idx} className="grid grid-cols-12 gap-2 text-[12px] text-[#334155] py-0.5">
-                                                    <div className="col-span-6 truncate font-medium">{item.name || 'Unknown Item'}</div>
-                                                    <div className="col-span-2 text-center">{item.quantity}</div>
-                                                    <div className="col-span-2 text-right">৳{item.price}</div>
-                                                    <div className="col-span-2 text-right font-semibold">৳{(item.quantity * item.price).toFixed(2)}</div>
+                                            <TableCell>
+                                                {isExpanded ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex flex-col">
+                                                    <span className="font-medium">{date}</span>
+                                                    <span className="text-xs text-muted-foreground">{time}</span>
                                                 </div>
-                                            ))
-                                        ) : (
-                                            <div className="text-center text-[#94A3B8] text-[12px] py-1">No items details available</div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge variant="secondary" className="capitalize">{sale.payment_method}</Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right font-bold text-primary">
+                                                ৳{sale.total_amount}
+                                            </TableCell>
+                                            <TableCell>
+                                                {onDeleteSale && (!('canEdit' in props) || props.canEdit) && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                                        onClick={(e) => handleDeleteClick(e, sale.id)}
+                                                        disabled={deletingId === sale.id}
+                                                    >
+                                                        {deletingId === sale.id ? (
+                                                            <div className="w-4 h-4 border-2 border-current border-t-transparent animate-spin rounded-full" />
+                                                        ) : (
+                                                            <Trash2 className="h-4 w-4" />
+                                                        )}
+                                                    </Button>
+                                                )}
+                                            </TableCell>
+                                        </TableRow>
+                                        {isExpanded && (
+                                            <TableRow className="bg-muted/30 hover:bg-muted/30">
+                                                <TableCell colSpan={5} className="p-0">
+                                                    <div className="p-4 border-t border-b">
+                                                        <div className="text-sm font-medium mb-2 flex items-center gap-2 text-muted-foreground">
+                                                            <ShoppingBag className="h-4 w-4" /> Order Details
+                                                        </div>
+                                                        <div className="rounded-md border bg-background">
+                                                            <Table>
+                                                                <TableHeader>
+                                                                    <TableRow className="bg-muted/50 text-xs hover:bg-muted/50">
+                                                                        <TableHead className="h-8">Item</TableHead>
+                                                                        <TableHead className="h-8 text-center">Qty</TableHead>
+                                                                        <TableHead className="h-8 text-right">Price</TableHead>
+                                                                        <TableHead className="h-8 text-right">Total</TableHead>
+                                                                    </TableRow>
+                                                                </TableHeader>
+                                                                <TableBody>
+                                                                    {sale.items && sale.items.length > 0 ? (
+                                                                        sale.items.map((item, idx) => (
+                                                                            <TableRow key={idx} className="hover:bg-transparent border-0">
+                                                                                <TableCell className="py-2">{item.name || 'Unknown'}</TableCell>
+                                                                                <TableCell className="py-2 text-center">{item.quantity}</TableCell>
+                                                                                <TableCell className="py-2 text-right">৳{item.price}</TableCell>
+                                                                                <TableCell className="py-2 text-right font-medium">৳{(item.quantity * item.price).toFixed(2)}</TableCell>
+                                                                            </TableRow>
+                                                                        ))
+                                                                    ) : (
+                                                                        <TableRow>
+                                                                            <TableCell colSpan={4} className="text-center text-muted-foreground py-4">No item details available</TableCell>
+                                                                        </TableRow>
+                                                                    )}
+                                                                </TableBody>
+                                                            </Table>
+                                                        </div>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
                                         )}
+                                    </>
+                                );
+                            })
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={5} className="h-64 text-center">
+                                    <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                                        <AlertCircle className="h-8 w-8 opacity-50" />
+                                        <p>No sales found in this period</p>
                                     </div>
-                                </div>
-                            )}
-                        </div>
-                    ))
-                ) : (
-                    <div className="flex flex-col items-center justify-center py-10 gap-2 h-full">
-                        <div className="w-10 h-10 rounded-full border-2 border-[#9AA3B0] flex items-center justify-center opacity-30 mb-2">
-                            <AlertCircle size={20} className="text-[#9AA3B0]" />
-                        </div>
-                        <span className="text-[#9AA3B0] font-inter text-[15px]">No sales found in this period</span>
-                    </div>
-                )}
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
             </div>
         </div>
     );
