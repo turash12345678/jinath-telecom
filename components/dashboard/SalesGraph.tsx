@@ -1,4 +1,5 @@
 "use client";
+import * as React from 'react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 
 interface SalesGraphProps {
@@ -6,6 +7,14 @@ interface SalesGraphProps {
 }
 
 export function SalesGraph({ data }: SalesGraphProps) {
+    const [mounted, setMounted] = React.useState(false);
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) return <div className="h-[350px] w-full bg-muted/10 animate-pulse rounded-lg" />;
+
     return (
         <ResponsiveContainer width="100%" height={350}>
             <LineChart data={data}>

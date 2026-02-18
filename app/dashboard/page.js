@@ -162,26 +162,26 @@ export default function Dashboard() {
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                         <StatsCard
                             title="Daily Revenue"
-                            value={`৳${(data.daily.revenue || 0).toLocaleString()}`}
+                            value={`৳${(data?.daily?.revenue || 0).toLocaleString()}`}
                             icon={CircleDollarSign}
                             description={`Today's date`}
                         />
                         <StatsCard
                             title="Daily Profit"
-                            value={`৳${(data.daily.profit || 0).toLocaleString()}`}
+                            value={`৳${(data?.daily?.profit || 0).toLocaleString()}`}
                             icon={BadgeDollarSign}
                             description={`Net profit today`}
                         />
                         <StatsCard
                             title="Monthly Revenue"
-                            value={`৳${(data.monthly.revenue || 0).toLocaleString()}`}
+                            value={`৳${(data?.monthly?.revenue || 0).toLocaleString()}`}
                             icon={TrendingUp}
                         />
                         <StatsCard
                             title="Monthly Orders"
-                            value={data.monthly.orders || 0}
+                            value={data?.monthly?.orders || 0}
                             icon={ShoppingCart}
-                            description={`${data.monthly.service_count} Svc, ${data.monthly.product_count} Prd`}
+                            description={`${data?.monthly?.service_count || 0} Svc, ${data?.monthly?.product_count || 0} Prd`}
                         />
                     </div>
 
@@ -196,9 +196,9 @@ export default function Dashboard() {
                     {/* Investment Section */}
                     {showInvestment && (
                         <div className="grid gap-4 md:grid-cols-3 animate-in fade-in slide-in-from-top-4 duration-300">
-                            <StatsCard title="Net Investment" value={`৳${(investmentData.invest || 0).toLocaleString()}`} icon={BadgeDollarSign} />
-                            <StatsCard title="Net Sold" value={`৳${(investmentData.revenue || 0).toLocaleString()}`} icon={CircleDollarSign} />
-                            <StatsCard title="Net Profit" value={`৳${(investmentData.profit || 0).toLocaleString()}`} icon={TrendingUp} />
+                            <StatsCard title="Net Investment" value={`৳${(investmentData?.invest || 0).toLocaleString()}`} icon={BadgeDollarSign} />
+                            <StatsCard title="Net Sold" value={`৳${(investmentData?.revenue || 0).toLocaleString()}`} icon={CircleDollarSign} />
+                            <StatsCard title="Net Profit" value={`৳${(investmentData?.profit || 0).toLocaleString()}`} icon={TrendingUp} />
                         </div>
                     )}
 
@@ -212,7 +212,7 @@ export default function Dashboard() {
                                     <CardTitle>Monthly Sales Overview</CardTitle>
                                 </CardHeader>
                                 <CardContent className="pl-2">
-                                    <SalesGraph data={data.monthly.graph_data} />
+                                    <SalesGraph data={data?.monthly?.graph_data || []} />
                                 </CardContent>
                             </Card>
 
@@ -223,7 +223,7 @@ export default function Dashboard() {
                                         <CardDescription>{month}</CardDescription>
                                     </CardHeader>
                                     <CardContent>
-                                        <TopProducts products={data.monthly.top_products} />
+                                        <TopProducts products={data?.monthly?.top_products || []} />
                                     </CardContent>
                                 </Card>
 
@@ -235,7 +235,7 @@ export default function Dashboard() {
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent>
-                                        <StockAlerts items={data.alerts} />
+                                        <StockAlerts items={data?.alerts || []} />
                                     </CardContent>
                                 </Card>
                             </div>
@@ -253,7 +253,7 @@ export default function Dashboard() {
                                 </CardHeader>
                                 <CardContent className="flex-1 overflow-auto min-h-[400px]">
                                     <SalesHistoryTable
-                                        sales={data.daily.history}
+                                        sales={data?.daily?.history || []}
                                         canEdit={true}
                                         onDeleteSale={(id) => {
                                             setData(prev => ({
