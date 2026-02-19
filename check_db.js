@@ -19,6 +19,12 @@ async function checkSchema() {
         const stockLogs = await client.execute("PRAGMA table_info(stock_logs)");
         console.log("Stock Logs Table Schema:", stockLogs.rows);
 
+        const saleBatchAllocations = await client.execute("PRAGMA table_info(sale_batch_allocations)");
+        console.log("Sale Batch Allocations Table Schema:", saleBatchAllocations.rows);
+
+        const saleItems = await client.execute("PRAGMA table_info(sale_items)");
+        console.log("Sale Items Table Schema:", saleItems.rows);
+
     } catch (e) {
         console.error("Error:", e);
     }
