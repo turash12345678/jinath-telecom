@@ -129,8 +129,17 @@ export default function Dashboard() {
                             <button onClick={() => changeDate(-1)} className="w-7 h-7 flex items-center justify-center rounded-full bg-white text-gray-600 shadow-sm hover:bg-gray-50 transition-colors">
                                 <ChevronLeft className="h-3.5 w-3.5" />
                             </button>
-                            <div className="px-3 font-bold text-[#111827] text-sm tracking-wide">
-                                {formattedDate}
+                            <div className="relative">
+                                {/* Hidden date input for functionality, styled to look like text */}
+                                <input
+                                    type="date"
+                                    value={selectedDate}
+                                    onChange={(e) => {
+                                        if (e.target.value) setSelectedDate(e.target.value);
+                                    }}
+                                    className="bg-transparent border-none outline-none text-[#111827] font-bold text-sm tracking-wide text-center cursor-pointer w-[110px]"
+                                    style={{ colorScheme: 'light' }}
+                                />
                             </div>
                             <button onClick={() => changeDate(1)} className="w-7 h-7 flex items-center justify-center rounded-full bg-white text-gray-600 shadow-sm hover:bg-gray-50 transition-colors">
                                 <ChevronRight className="h-3.5 w-3.5" />

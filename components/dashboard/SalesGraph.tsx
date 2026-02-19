@@ -23,9 +23,9 @@ export function SalesGraph({ data }: SalesGraphProps) {
                     dataKey="date"
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: '#6B7280', fontSize: 10 }}
+                    tick={{ fill: '#6B7280', fontSize: 11 }}
                     dy={10}
-                    minTickGap={15}
+                    interval="preserveStartEnd"
                     tickFormatter={(value) => {
                         const date = new Date(value);
                         return `${date.getDate()}`;
