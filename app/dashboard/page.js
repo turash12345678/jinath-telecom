@@ -156,8 +156,8 @@ export default function Dashboard() {
         <div className="min-h-screen bg-[#F9FAFB] font-sans">
             <Sidebar />
 
-            <main className="flex-1 p-4 md:p-6 lg:p-8 md:ml-64 transition-all duration-300 bg-[#F9FAFB] min-h-screen">
-                <div className="mx-auto max-w-7xl flex flex-col gap-6">
+            <main className="flex-1 p-3 md:p-5 lg:p-6 md:ml-64 transition-all duration-300 bg-[#EFF3F9] min-h-screen">
+                <div className="mx-auto max-w-7xl flex flex-col gap-4">
 
                     {/* Header */}
                     <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

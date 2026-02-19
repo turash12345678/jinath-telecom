@@ -137,7 +137,7 @@ export default function ServicesPage() {
         <div className="min-h-screen bg-[#F9FAFB]">
             <Sidebar />
 
-            <main className="flex-1 p-4 md:p-6 lg:p-8 md:ml-64 transition-all duration-300 bg-[#F9FAFB] min-h-screen">
+            <main className="flex-1 p-3 md:p-5 lg:p-6 md:ml-64 transition-all duration-300 bg-[#EFF3F9] min-h-screen">
                 <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                     <div className="pl-12 lg:pl-0">
                         <h1 className="text-2xl font-bold text-[#111827]">Services</h1>

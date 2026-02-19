@@ -54,16 +54,16 @@ export default function Sidebar() {
 
             {/* Sidebar */}
             <aside className={`
-                fixed top-0 left-0 z-50 h-screen w-64 bg-white border-r border-[#E5E7EB] text-[#111827] transition-transform duration-300 ease-in-out
+                fixed top-0 left-0 z-50 h-screen w-64 bg-white border-r border-[#E0E0E0] text-[#0F1828] transition-transform duration-300 ease-in-out
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
                 md:translate-x-0
             `}>
-                <div className="flex h-full flex-col">
+                <div className="flex h-full flex-col font-sans">
                     {/* Header */}
-                    <div className="flex h-16 items-center px-6 border-b border-gray-100">
+                    <div className="flex h-[60px] items-center px-6 border-b border-[#E0E0E0]">
                         <div>
-                            <h2 className="text-xl font-bold tracking-tight text-gray-900">Jinath Telecom</h2>
-                            <p className="text-xs text-gray-500 font-medium">Management System</p>
+                            <h2 className="text-xl font-bold tracking-tight text-[#0F1828]">Jinath Telecom</h2>
+                            <p className="text-xs text-[#6B7280] font-medium">Management System</p>
                         </div>
                     </div>
 
@@ -78,15 +78,15 @@ export default function Sidebar() {
                                         key={item.path}
                                         href={item.path}
                                         className={`
-                                            flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors
+                                            flex items-center gap-3 rounded-[12px] px-3 py-2.5 text-sm font-medium transition-all duration-200
                                             ${isActive
-                                                ? 'bg-blue-50 text-blue-700'
-                                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                                                ? 'bg-[#EFF3F9] text-[#0065F4]'
+                                                : 'text-[#4B5563] hover:bg-[#F3F4F6] hover:text-[#111827]'
                                             }
                                         `}
                                         onClick={closeSidebar}
                                     >
-                                        <Icon size={20} className={isActive ? 'text-blue-600' : 'text-gray-500'} />
+                                        <Icon size={20} className={isActive ? 'text-[#0065F4]' : 'text-[#9CA3AF]'} strokeWidth={isActive ? 2.5 : 2} />
                                         {item.name}
                                     </Link>
                                 );
@@ -95,10 +95,10 @@ export default function Sidebar() {
                     </div>
 
                     {/* Footer / Logout */}
-                    <div className="p-4 border-t border-gray-100">
+                    <div className="p-4 border-t border-[#E0E0E0]">
                         <button
                             onClick={handleLogout}
-                            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                            className="flex w-full items-center gap-3 rounded-[12px] px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
                         >
                             <LogOut size={20} />
                             Log Out
