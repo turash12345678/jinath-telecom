@@ -86,7 +86,7 @@ export default function Sidebar() {
                                         `}
                                         onClick={closeSidebar}
                                     >
-                                        <Icon size={20} className={isActive ? 'text-[#0065F4]' : 'text-[#9CA3AF]'} strokeWidth={isActive ? 2.5 : 2} />
+                                        {/* Icon removed as per user request */}
                                         {item.name}
                                     </Link>
                                 );

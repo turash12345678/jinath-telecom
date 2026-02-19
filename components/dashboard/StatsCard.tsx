@@ -40,12 +40,6 @@ export function StatsCard({ title, value, icon: Icon, description, trend, color 
                     <p className="text-[11px] text-gray-400 font-medium">{description}</p>
                 </div>
             )}
-
-            {/* Decorative circle */}
-            <div
-                className="absolute -bottom-4 -right-4 w-20 h-20 rounded-full opacity-5"
-                style={{ backgroundColor: color }}
-            />
         </div>
     );
 }
