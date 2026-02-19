@@ -182,10 +182,27 @@ export default function Dashboard() {
                                 <div className="flex justify-between items-center mb-6">
                                     <h3 className="text-base font-bold text-[#111827]">Monthly Sales</h3>
                                     <div className="relative">
-                                        <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100 transition-colors border border-gray-100">
+                                        <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100 transition-colors border border-gray-100 group relative">
                                             <CalendarIcon size={14} />
-                                            <span>{monthName}</span>
-                                            {/* In a real implementation, this would trigger a dropdown */}
+                                            <select
+                                                className="bg-transparent border-none outline-none text-gray-700 font-semibold text-sm appearance-none cursor-pointer pr-5 z-10"
+                                                value={mVal - 1} // 0-indexed month
+                                                onChange={(e) => {
+                                                    const newMonth = parseInt(e.target.value);
+                                                    const [y, m, d] = selectedDate.split('-').map(Number);
+                                                    // Set to 1st of selected month to avoid overflow (e.g. Feb 30)
+                                                    const newDate = new Date(y, newMonth, 1);
+                                                    const formatted = `${newDate.getFullYear()}-${String(newDate.getMonth() + 1).padStart(2, '0')}-${String(newDate.getDate()).padStart(2, '0')}`;
+                                                    setSelectedDate(formatted);
+                                                }}
+                                            >
+                                                {months.map((m, i) => (
+                                                    <option key={i} value={i}>{m}</option>
+                                                ))}
+                                            </select>
+                                            <div className="absolute right-2 pointer-events-none text-gray-500 flex items-center">
+                                                <ChevronRight className="h-3 w-3 rotate-90" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -229,7 +246,7 @@ export default function Dashboard() {
                                 </div>
                                 <div className="grid gap-4 grid-cols-2">
                                     {/* Total Sale Card */}
-                                    <div className="bg-white rounded-[24px] p-5 shadow-sm border border-gray-100 flex flex-col justify-center gap-1 h-[140px] relative overflow-hidden group hover:shadow-md transition-shadow">
+                                    <div className="bg-white rounded-[24px] p-5 shadow-sm border border-gray-100 flex flex-col justify-center gap-1 h-[130px] relative overflow-hidden group hover:shadow-md transition-shadow">
                                         <h3 className="text-[#6B7280] font-medium text-xs tracking-wide">Total Sale</h3>
                                         <div className="flex items-baseline">
                                             <span className="text-xl font-extrabold mr-1 text-[#111827]">৳</span>
@@ -240,7 +257,7 @@ export default function Dashboard() {
                                     </div>
 
                                     {/* Total Profit Card */}
-                                    <div className="bg-white rounded-[24px] p-5 shadow-sm border border-gray-100 flex flex-col justify-center gap-1 h-[140px] relative overflow-hidden group hover:shadow-md transition-shadow">
+                                    <div className="bg-white rounded-[24px] p-5 shadow-sm border border-gray-100 flex flex-col justify-center gap-1 h-[130px] relative overflow-hidden group hover:shadow-md transition-shadow">
                                         <h3 className="text-[#6B7280] font-medium text-xs tracking-wide">Total Profit</h3>
                                         <div className="flex items-baseline">
                                             <span className="text-xl font-extrabold mr-1 text-[#F97316]">৳</span>
