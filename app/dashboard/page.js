@@ -144,7 +144,7 @@ export default function Dashboard() {
         setSelectedDate(`${nextY}-${nextM}-${nextD}`);
     };
 
-    if (!user) return <div className="flex justify-center items-center h-screen bg-muted/40">Loading...</div>;
+    if (!user) return <div className="flex justify-center items-center h-screen bg-gray-100">Loading...</div>;
 
     const [yVal, mVal, dVal] = selectedDate.split('-').map(Number);
     const dateObj = new Date(yVal, mVal - 1, dVal);
@@ -162,8 +162,8 @@ export default function Dashboard() {
                     {/* Header */}
                     <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
-                            <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
-                            <p className="text-muted-foreground">Welcome back, {user.name}</p>
+                            <h1 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h1>
+                            <p className="text-gray-500">Welcome back, {user.name}</p>
                         </div>
 
                         <div className="flex items-center gap-2 bg-white p-1 rounded-xl border border-gray-200 shadow-sm">
