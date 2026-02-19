@@ -54,9 +54,9 @@ export default function Sidebar() {
 
             {/* Sidebar */}
             <aside className={`
-                fixed top-0 left-0 z-50 h-[100dvh] w-64 bg-white border-r border-gray-200 text-gray-900 transition-transform duration-300 ease-in-out
+                fixed top-0 left-0 z-50 h-[100dvh] w-64 bg-white border-r border-gray-100 text-gray-900 transition-transform duration-300 ease-in-out
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-                md:translate-x-0 md:static md:block
+                md:translate-x-0
             `}>
                 <div className="flex h-full flex-col">
                     {/* Header */}
