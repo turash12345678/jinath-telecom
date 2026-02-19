@@ -48,12 +48,6 @@ export default function Dashboard() {
         alerts: []
     });
 
-    // Investment Tracker State
-    const [showInvestment, setShowInvestment] = useState(false);
-    const [investmentData, setInvestmentData] = useState({ invest: 0, revenue: 0, profit: 0 });
-    const [investmentFilter, setInvestmentFilter] = useState('January'); // Default to Jan
-    const [loading, setLoading] = useState(true);
-
     const months = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
@@ -70,14 +64,6 @@ export default function Dashboard() {
             .catch(() => router.push('/login'));
     }, [router]);
 
-    // Sync investment filter
-    useEffect(() => {
-        if (investmentFilter !== 'All Time') {
-            const date = new Date(selectedDate);
-            const mName = date.toLocaleString('default', { month: 'long' });
-            setInvestmentFilter(mName);
-        }
-    }, [selectedDate, investmentFilter]);
 
     // 2. Fetch Dashboard Data
     useEffect(() => {
@@ -105,34 +91,6 @@ export default function Dashboard() {
         fetchData();
     }, [selectedDate, user]);
 
-    // Fetch Investment Data
-    useEffect(() => {
-        if (!user) return;
-        const fetchInvestment = async () => {
-            let param = '';
-            if (investmentFilter === 'All Time') {
-                param = 'filter=all';
-            } else {
-                const [y] = selectedDate.split('-');
-                const mIdx = months.indexOf(investmentFilter);
-                if (mIdx !== -1) {
-                    const mStr = String(mIdx + 1).padStart(2, '0');
-                    param = `filter=${y}-${mStr}`;
-                } else {
-                    param = `date=${selectedDate}`;
-                }
-            }
-
-            try {
-                const res = await fetch(`/api/dashboard/investment?${param}`);
-                const json = await res.json();
-                if (!json.error) setInvestmentData(json);
-            } catch (err) {
-                console.error(err);
-            }
-        };
-        fetchInvestment();
-    }, [investmentFilter, selectedDate, user, months]);
 
     const changeDate = (days) => {
         const [y, m, d] = selectedDate.split('-').map(Number);
@@ -210,23 +168,6 @@ export default function Dashboard() {
                             description="Total Sales"
                         />
                     </div>
-
-                    {/* Investment Section Toggle */}
-                    <div className="flex items-center justify-between mt-2">
-                        <h2 className="text-lg font-bold text-[#111827]">Analytics & Reports</h2>
-                        <Button variant="outline" size="sm" onClick={() => setShowInvestment(!showInvestment)} className="rounded-xl border-gray-200">
-                            {showInvestment ? "Hide Investment" : "Show Investment"}
-                        </Button>
-                    </div>
-
-                    {/* Investment Section */}
-                    {showInvestment && (
-                        <div className="grid gap-6 md:grid-cols-3 animate-in fade-in slide-in-from-top-4 duration-300">
-                            <StatsCard title="Net Investment" value={`৳${(investmentData?.invest || 0).toLocaleString()}`} icon={BadgeDollarSign} color="#EC4899" />
-                            <StatsCard title="Net Sold" value={`৳${(investmentData?.revenue || 0).toLocaleString()}`} icon={CircleDollarSign} color="#10B981" />
-                            <StatsCard title="Net Profit" value={`৳${(investmentData?.profit || 0).toLocaleString()}`} icon={TrendingUp} color="#0065F4" />
-                        </div>
-                    )}
 
                     {/* Content Grid */}
                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
