@@ -45,7 +45,7 @@ export function SalesGraph({ data }: SalesGraphProps) {
                     labelFormatter={(label) => new Date(label).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
                 />
                 <Line
-                    type="monotone"
+                    type="linear"
                     dataKey="total"
                     stroke="#0065F4"
                     strokeWidth={2}
