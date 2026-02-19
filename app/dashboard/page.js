@@ -48,6 +48,8 @@ export default function Dashboard() {
         alerts: []
     });
 
+    const [loading, setLoading] = useState(true);
+
     const months = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
