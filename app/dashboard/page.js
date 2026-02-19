@@ -139,7 +139,7 @@ export default function Dashboard() {
                     </header>
 
                     {/* Stats Sections Container */}
-                    <div className="grid gap-6 lg:grid-cols-4">
+                    <div className="grid gap-6 lg:grid-cols-5">
 
                         {/* LEFT: Monthly Report (3 cols) */}
                         <div className="lg:col-span-3 flex flex-col gap-4">
@@ -149,13 +149,13 @@ export default function Dashboard() {
                                     <Download size={12} /> Download Month CSV
                                 </button>
                             </div>
-                            <div className="grid gap-4 md:grid-cols-3">
+                            <div className="grid gap-4 md:grid-cols-3 h-full">
                                 <StatsCard
                                     title="Net Sale"
                                     value={`৳${(data?.monthly?.revenue || 0).toLocaleString()}`}
                                     icon={CircleDollarSign}
                                     color="#10B981" // Green
-                                    description="Profit" // Label in Ahsania screenshot is confusing, but keeping consistent structure
+                                    description="Profit"
                                 />
                                 <StatsCard
                                     title="Net Income"
@@ -174,32 +174,34 @@ export default function Dashboard() {
                             </div>
                         </div>
 
-                        {/* RIGHT: Daily Overview (1 col) */}
-                        <div className="lg:col-span-1 flex flex-col gap-4">
+                        {/* RIGHT: Daily Overview (2 cols) */}
+                        <div className="lg:col-span-2 flex flex-col gap-4">
                             <div className="flex justify-between items-end px-1">
                                 <h3 className="text-sm font-bold text-[#9CA3AF] uppercase tracking-wider">Daily Overview</h3>
                                 <button className="text-xs font-medium text-[#3B82F6] flex items-center gap-1 hover:underline">
                                     <Download size={12} /> Daily CSV
                                 </button>
                             </div>
-                            <div className="bg-white rounded-[20px] p-5 shadow-sm border border-gray-100 h-full flex flex-col justify-center gap-4">
-                                <div>
-                                    <p className="text-xs font-medium text-gray-400 mb-1">Total Sale</p>
-                                    <div className="flex items-center gap-1.5">
-                                        <h3 className="text-2xl font-bold text-[#111827]">
-                                            <span className="text-2xl font-extrabold mr-0.5">৳</span>
+                            <div className="grid gap-4 grid-cols-2 h-full">
+                                {/* Total Sale Card */}
+                                <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100 flex flex-col justify-center gap-2 h-[160px] relative overflow-hidden group hover:shadow-md transition-shadow">
+                                    <h3 className="text-[#6B7280] font-medium text-sm tracking-wide">Total Sale</h3>
+                                    <div className="flex items-baseline">
+                                        <span className="text-2xl font-extrabold mr-1 text-[#111827]">৳</span>
+                                        <span className="text-3xl font-bold text-[#111827]">
                                             {(data?.daily?.revenue || 0).toLocaleString()}
-                                        </h3>
+                                        </span>
                                     </div>
                                 </div>
-                                <div className="h-px bg-gray-100 w-full"></div>
-                                <div>
-                                    <p className="text-xs font-medium text-gray-400 mb-1">Total Profit</p>
-                                    <div className="flex items-center gap-1.5">
-                                        <h3 className="text-2xl font-bold text-[#F97316]">
-                                            <span className="text-2xl font-extrabold mr-0.5">৳</span>
+
+                                {/* Total Profit Card */}
+                                <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100 flex flex-col justify-center gap-2 h-[160px] relative overflow-hidden group hover:shadow-md transition-shadow">
+                                    <h3 className="text-[#6B7280] font-medium text-sm tracking-wide">Total Profit</h3>
+                                    <div className="flex items-baseline">
+                                        <span className="text-2xl font-extrabold mr-1 text-[#F97316]">৳</span>
+                                        <span className="text-3xl font-bold text-[#F97316]">
                                             {(data?.daily?.profit || 0).toLocaleString()}
-                                        </h3>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
