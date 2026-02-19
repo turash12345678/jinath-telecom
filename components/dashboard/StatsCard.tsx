@@ -15,7 +15,7 @@ export function StatsCard({ title, value, icon: Icon, description, trend, color 
     const displayValue = isMoney ? value.replace('৳', '') : value;
 
     return (
-        <div className="bg-white rounded-[24px] p-5 shadow-sm border border-gray-100 flex flex-col justify-between h-[130px] relative overflow-hidden group hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-[20px] p-4 shadow-sm border border-gray-100 flex flex-col justify-between h-[110px] relative overflow-hidden group hover:shadow-md transition-shadow">
             <div className="flex justify-between items-start z-10">
                 <div className="flex flex-col gap-1">
                     <h3 className="text-[#6B7280] font-medium text-xs tracking-wide uppercase">{title}</h3>

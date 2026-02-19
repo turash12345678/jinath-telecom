@@ -129,8 +129,8 @@ export default function Dashboard() {
                             <button onClick={() => changeDate(-1)} className="w-7 h-7 flex items-center justify-center rounded-full bg-white text-gray-600 shadow-sm hover:bg-gray-50 transition-colors">
                                 <ChevronLeft className="h-3.5 w-3.5" />
                             </button>
-                            <div className="relative px-3">
-                                <div className="font-bold text-[#111827] text-sm tracking-wide cursor-pointer">
+                            <div className="relative px-3 group">
+                                <div className="font-bold text-[#111827] text-sm tracking-wide cursor-pointer group-hover:text-blue-600 transition-colors">
                                     {formattedDate}
                                 </div>
                                 <input
@@ -139,7 +139,7 @@ export default function Dashboard() {
                                     onChange={(e) => {
                                         if (e.target.value) setSelectedDate(e.target.value);
                                     }}
-                                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
                                 />
                             </div>
                             <button onClick={() => changeDate(1)} className="w-7 h-7 flex items-center justify-center rounded-full bg-white text-gray-600 shadow-sm hover:bg-gray-50 transition-colors">
@@ -256,7 +256,7 @@ export default function Dashboard() {
                                 </div>
                                 <div className="grid gap-4 grid-cols-2">
                                     {/* Total Sale Card */}
-                                    <div className="bg-white rounded-[24px] p-5 shadow-sm border border-gray-100 flex flex-col justify-center gap-1 h-[130px] relative overflow-hidden group hover:shadow-md transition-shadow">
+                                    <div className="bg-white rounded-[20px] p-4 shadow-sm border border-gray-100 flex flex-col justify-center gap-1 h-[105px] relative overflow-hidden group hover:shadow-md transition-shadow">
                                         <h3 className="text-[#6B7280] font-medium text-xs tracking-wide">Total Sale</h3>
                                         <div className="flex items-baseline">
                                             <span className="text-xl font-extrabold mr-1 text-[#111827]">৳</span>
@@ -267,7 +267,7 @@ export default function Dashboard() {
                                     </div>
 
                                     {/* Total Profit Card */}
-                                    <div className="bg-white rounded-[24px] p-5 shadow-sm border border-gray-100 flex flex-col justify-center gap-1 h-[130px] relative overflow-hidden group hover:shadow-md transition-shadow">
+                                    <div className="bg-white rounded-[20px] p-4 shadow-sm border border-gray-100 flex flex-col justify-center gap-1 h-[105px] relative overflow-hidden group hover:shadow-md transition-shadow">
                                         <h3 className="text-[#6B7280] font-medium text-xs tracking-wide">Total Profit</h3>
                                         <div className="flex items-baseline">
                                             <span className="text-xl font-extrabold mr-1 text-[#F97316]">৳</span>
