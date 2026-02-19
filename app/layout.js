@@ -2,7 +2,7 @@ import "./globals.css";
 
 export const metadata = {
   title: "Jinath Telecom",
-  description: "Management Dashboard for Jinath Telecom",
+  description: "Professional Management Dashboard for Jinath Telecom",
 };
 
 export default function RootLayout({ children }) {
