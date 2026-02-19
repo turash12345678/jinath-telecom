@@ -218,7 +218,7 @@ export default function Dashboard() {
                                     <h3 className="text-lg font-bold text-[#111827]">Monthly Sales</h3>
                                     <div className="flex items-center gap-2 bg-gray-50 px-3 py-1 rounded-lg text-sm font-medium text-gray-600">
                                         <CalendarIcon size={16} />
-                                        {month}
+                                        {monthName}
                                     </div>
                                 </div>
                                 <div className="h-[350px] w-full">
@@ -231,7 +231,7 @@ export default function Dashboard() {
                                 <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100">
                                     <div className="flex justify-between items-center mb-4">
                                         <h3 className="text-lg font-bold text-[#111827]">Top Selling Products</h3>
-                                        <p className="text-xs text-gray-400 font-medium bg-gray-50 px-2 py-1 rounded-md">{month}</p>
+                                        <p className="text-xs text-gray-400 font-medium bg-gray-50 px-2 py-1 rounded-md">{monthName}</p>
                                     </div>
                                     <TopProducts products={data?.monthly?.top_products || []} />
                                 </div>
