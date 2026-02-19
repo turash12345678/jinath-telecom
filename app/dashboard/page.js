@@ -107,68 +107,104 @@ export default function Dashboard() {
     if (!user) return <div className="flex justify-center items-center h-screen bg-gray-100">Loading...</div>;
 
     const [yVal, mVal, dVal] = selectedDate.split('-').map(Number);
-    const dateObj = new Date(yVal, mVal - 1, dVal);
-    const day = String(dVal).padStart(2, '0');
-    const month = dateObj.toLocaleString('default', { month: 'long' });
-    const year = yVal;
+    // Date Format: MM / DD / YYYY
+    const formattedDate = `${String(mVal).padStart(2, '0')} / ${String(dVal).padStart(2, '0')} / ${yVal}`;
+    const monthName = new Date(yVal, mVal - 1, dVal).toLocaleString('default', { month: 'long' });
 
     return (
         <div className="min-h-screen bg-[#F9FAFB] font-sans">
             <Sidebar />
 
             <main className="flex-1 p-3 md:p-5 lg:p-6 md:ml-64 transition-all duration-300 bg-[#EFF3F9] min-h-screen">
-                <div className="mx-auto max-w-7xl flex flex-col gap-4">
+                <div className="mx-auto max-w-7xl flex flex-col gap-6">
 
                     {/* Header */}
-                    <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-4 rounded-[20px] shadow-sm border border-gray-100">
                         <div>
-                            <h1 className="text-3xl font-bold tracking-tight text-[#111827]">Dashboard</h1>
-                            <p className="text-gray-500">Welcome back, {user.name}</p>
+                            <h1 className="text-2xl font-bold tracking-tight text-[#111827]">Dashboard</h1>
+                            <p className="text-gray-500 text-sm">Welcome back, {user.name}</p>
                         </div>
 
-                        <div className="flex items-center gap-2 bg-white p-1 rounded-xl border border-gray-200 shadow-sm">
-                            <Button variant="ghost" size="icon" onClick={() => changeDate(-1)}>
+                        <div className="flex items-center gap-3 bg-[#F3F4F6] p-1.5 rounded-full border border-gray-200">
+                            <button onClick={() => changeDate(-1)} className="w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-600 shadow-sm hover:bg-gray-50 transition-colors">
                                 <ChevronLeft className="h-4 w-4" />
-                            </Button>
-                            <div className="px-4 font-medium min-w-[120px] text-center text-[#111827]">
-                                {day} {month} {year}
+                            </button>
+                            <div className="px-4 font-bold text-[#111827] text-sm tracking-wide">
+                                {formattedDate}
                             </div>
-                            <Button variant="ghost" size="icon" onClick={() => changeDate(1)}>
+                            <button onClick={() => changeDate(1)} className="w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-600 shadow-sm hover:bg-gray-50 transition-colors">
                                 <ChevronRight className="h-4 w-4" />
-                            </Button>
+                            </button>
                         </div>
                     </header>
 
-                    {/* Stats Grid */}
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                        <StatsCard
-                            title="Net Sale"
-                            value={`৳${(data?.daily?.revenue || 0).toLocaleString()}`}
-                            icon={CircleDollarSign}
-                            color="#10B981" // Green
-                            description="Revenue"
-                        />
-                        <StatsCard
-                            title="Net Income"
-                            value={`৳${(data?.daily?.profit || 0).toLocaleString()}`}
-                            icon={BadgeDollarSign}
-                            color="#0065F4" // Blue
-                            description="Profit"
-                        />
-                        <StatsCard
-                            title="Orders"
-                            value={data?.monthly?.orders || 0}
-                            icon={ShoppingCart}
-                            color="#F59E0B" // Orange
-                            description={`${data?.monthly?.service_count || 0} Service, ${data?.monthly?.product_count || 0} Product`}
-                        />
-                        <StatsCard
-                            title="Monthly Revenue"
-                            value={`৳${(data?.monthly?.revenue || 0).toLocaleString()}`}
-                            icon={TrendingUp}
-                            color="#8B5CF6" // Purple
-                            description="Total Sales"
-                        />
+                    {/* Stats Sections Container */}
+                    <div className="grid gap-6 lg:grid-cols-4">
+
+                        {/* LEFT: Monthly Report (3 cols) */}
+                        <div className="lg:col-span-3 flex flex-col gap-4">
+                            <div className="flex justify-between items-end px-1">
+                                <h3 className="text-sm font-bold text-[#9CA3AF] uppercase tracking-wider">Monthly Report</h3>
+                                <button className="text-xs font-medium text-[#3B82F6] flex items-center gap-1 hover:underline">
+                                    <Download size={12} /> Download Month CSV
+                                </button>
+                            </div>
+                            <div className="grid gap-4 md:grid-cols-3">
+                                <StatsCard
+                                    title="Net Sale"
+                                    value={`৳${(data?.monthly?.revenue || 0).toLocaleString()}`}
+                                    icon={CircleDollarSign}
+                                    color="#10B981" // Green
+                                    description="Profit" // Label in Ahsania screenshot is confusing, but keeping consistent structure
+                                />
+                                <StatsCard
+                                    title="Net Income"
+                                    value={`৳${(data?.monthly?.profit || 0).toLocaleString()}`}
+                                    icon={BadgeDollarSign}
+                                    color="#0065F4" // Blue
+                                    description="Revenue"
+                                />
+                                <StatsCard
+                                    title="Orders"
+                                    value={data?.monthly?.orders || 0}
+                                    icon={ShoppingCart}
+                                    color="#F59E0B" // Orange
+                                    description={`${data?.monthly?.service_count || 0} Service : ${data?.monthly?.product_count || 0} Product`}
+                                />
+                            </div>
+                        </div>
+
+                        {/* RIGHT: Daily Overview (1 col) */}
+                        <div className="lg:col-span-1 flex flex-col gap-4">
+                            <div className="flex justify-between items-end px-1">
+                                <h3 className="text-sm font-bold text-[#9CA3AF] uppercase tracking-wider">Daily Overview</h3>
+                                <button className="text-xs font-medium text-[#3B82F6] flex items-center gap-1 hover:underline">
+                                    <Download size={12} /> Daily CSV
+                                </button>
+                            </div>
+                            <div className="bg-white rounded-[20px] p-5 shadow-sm border border-gray-100 h-full flex flex-col justify-center gap-4">
+                                <div>
+                                    <p className="text-xs font-medium text-gray-400 mb-1">Total Sale</p>
+                                    <div className="flex items-center gap-1.5">
+                                        <h3 className="text-2xl font-bold text-[#111827]">
+                                            <span className="text-2xl font-extrabold mr-0.5">৳</span>
+                                            {(data?.daily?.revenue || 0).toLocaleString()}
+                                        </h3>
+                                    </div>
+                                </div>
+                                <div className="h-px bg-gray-100 w-full"></div>
+                                <div>
+                                    <p className="text-xs font-medium text-gray-400 mb-1">Total Profit</p>
+                                    <div className="flex items-center gap-1.5">
+                                        <h3 className="text-2xl font-bold text-[#F97316]">
+                                            <span className="text-2xl font-extrabold mr-0.5">৳</span>
+                                            {(data?.daily?.profit || 0).toLocaleString()}
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     {/* Content Grid */}
