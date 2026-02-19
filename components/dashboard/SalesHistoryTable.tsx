@@ -2,16 +2,6 @@
 
 import { Trash2, AlertCircle, ChevronDown, ChevronRight, ShoppingBag } from "lucide-react";
 import { useState } from "react";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 interface Sale {
@@ -82,19 +72,19 @@ export function SalesHistoryTable({ sales, onDeleteSale, canEdit = true }: Sales
     };
 
     return (
-        <div className="w-full h-full flex flex-col">
-            <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[30px]"></TableHead>
-                            <TableHead>Date & Time</TableHead>
-                            <TableHead>Method</TableHead>
-                            <TableHead className="text-right">Amount</TableHead>
-                            <TableHead className="w-[50px]"></TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
+        <div className="w-full h-full flex flex-col overflow-auto">
+            <div className="rounded-xl border border-gray-100 overflow-hidden">
+                <table className="w-full text-sm">
+                    <thead className="bg-[#F9FAFB] border-b border-gray-100">
+                        <tr className="text-left">
+                            <th className="h-10 px-4 w-[30px]"></th>
+                            <th className="h-10 px-4 font-medium text-gray-500">Date & Time</th>
+                            <th className="h-10 px-4 font-medium text-gray-500">Method</th>
+                            <th className="h-10 px-4 font-medium text-gray-500 text-right">Amount</th>
+                            <th className="h-10 px-4 w-[50px]"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         {sales.length > 0 ? (
                             sales.map((sale) => {
                                 const { date, time } = formatDate(sale.created_at);
@@ -102,32 +92,32 @@ export function SalesHistoryTable({ sales, onDeleteSale, canEdit = true }: Sales
 
                                 return (
                                     <>
-                                        <TableRow
+                                        <tr
                                             key={sale.id}
-                                            className="cursor-pointer hover:bg-muted/50 transition-colors"
+                                            className="cursor-pointer hover:bg-gray-50/50 transition-colors border-b border-gray-50 last:border-0"
                                             onClick={() => toggleExpand(sale.id)}
                                         >
-                                            <TableCell>
-                                                {isExpanded ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
-                                            </TableCell>
-                                            <TableCell>
+                                            <td className="p-4 align-middle">
+                                                {isExpanded ? <ChevronDown className="h-4 w-4 text-gray-400" /> : <ChevronRight className="h-4 w-4 text-gray-400" />}
+                                            </td>
+                                            <td className="p-4 align-middle">
                                                 <div className="flex flex-col">
-                                                    <span className="font-medium">{date}</span>
-                                                    <span className="text-xs text-muted-foreground">{time}</span>
+                                                    <span className="font-medium text-gray-900">{date}</span>
+                                                    <span className="text-xs text-gray-500">{time}</span>
                                                 </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge variant="secondary" className="capitalize">{sale.payment_method}</Badge>
-                                            </TableCell>
-                                            <TableCell className="text-right font-bold text-primary">
+                                            </td>
+                                            <td className="p-4 align-middle">
+                                                <span className="inline-flex items-center rounded-md border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-xs font-semibold text-gray-700 capitalize">
+                                                    {sale.payment_method}
+                                                </span>
+                                            </td>
+                                            <td className="p-4 align-middle text-right font-bold text-[#0065F4]">
                                                 ৳{sale.total_amount}
-                                            </TableCell>
-                                            <TableCell>
+                                            </td>
+                                            <td className="p-4 align-middle">
                                                 {onDeleteSale && (!('canEdit' in props) || props.canEdit) && (
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                                    <button
+                                                        className="h-8 w-8 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                                                         onClick={(e) => handleDeleteClick(e, sale.id)}
                                                         disabled={deletingId === sale.id}
                                                     >
@@ -136,64 +126,64 @@ export function SalesHistoryTable({ sales, onDeleteSale, canEdit = true }: Sales
                                                         ) : (
                                                             <Trash2 className="h-4 w-4" />
                                                         )}
-                                                    </Button>
+                                                    </button>
                                                 )}
-                                            </TableCell>
-                                        </TableRow>
+                                            </td>
+                                        </tr>
                                         {isExpanded && (
-                                            <TableRow className="bg-muted/30 hover:bg-muted/30">
-                                                <TableCell colSpan={5} className="p-0">
-                                                    <div className="p-4 border-t border-b">
-                                                        <div className="text-sm font-medium mb-2 flex items-center gap-2 text-muted-foreground">
+                                            <tr className="bg-gray-50/30">
+                                                <td colSpan={5} className="p-0">
+                                                    <div className="p-4 border-t border-b border-gray-100">
+                                                        <div className="text-sm font-medium mb-2 flex items-center gap-2 text-gray-500">
                                                             <ShoppingBag className="h-4 w-4" /> Order Details
                                                         </div>
-                                                        <div className="rounded-md border bg-background">
-                                                            <Table>
-                                                                <TableHeader>
-                                                                    <TableRow className="bg-muted/50 text-xs hover:bg-muted/50">
-                                                                        <TableHead className="h-8">Item</TableHead>
-                                                                        <TableHead className="h-8 text-center">Qty</TableHead>
-                                                                        <TableHead className="h-8 text-right">Price</TableHead>
-                                                                        <TableHead className="h-8 text-right">Total</TableHead>
-                                                                    </TableRow>
-                                                                </TableHeader>
-                                                                <TableBody>
+                                                        <div className="rounded-lg border border-gray-100 bg-white overflow-hidden">
+                                                            <table className="w-full text-xs">
+                                                                <thead className="bg-[#F9FAFB] border-b border-gray-100">
+                                                                    <tr className="text-left">
+                                                                        <th className="h-8 px-4 font-medium text-gray-500">Item</th>
+                                                                        <th className="h-8 px-4 font-medium text-gray-500 text-center">Qty</th>
+                                                                        <th className="h-8 px-4 font-medium text-gray-500 text-right">Price</th>
+                                                                        <th className="h-8 px-4 font-medium text-gray-500 text-right">Total</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
                                                                     {sale.items && sale.items.length > 0 ? (
                                                                         sale.items.map((item, idx) => (
-                                                                            <TableRow key={idx} className="hover:bg-transparent border-0">
-                                                                                <TableCell className="py-2">{item.name || 'Unknown'}</TableCell>
-                                                                                <TableCell className="py-2 text-center">{item.quantity}</TableCell>
-                                                                                <TableCell className="py-2 text-right">৳{item.price}</TableCell>
-                                                                                <TableCell className="py-2 text-right font-medium">৳{(item.quantity * item.price).toFixed(2)}</TableCell>
-                                                                            </TableRow>
+                                                                            <tr key={idx} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/20">
+                                                                                <td className="px-4 py-2 font-medium text-gray-900">{item.name || 'Unknown'}</td>
+                                                                                <td className="px-4 py-2 text-center text-gray-600">{item.quantity}</td>
+                                                                                <td className="px-4 py-2 text-right text-gray-600">৳{item.price}</td>
+                                                                                <td className="px-4 py-2 text-right font-medium text-gray-900">৳{(item.quantity * item.price).toFixed(2)}</td>
+                                                                            </tr>
                                                                         ))
                                                                     ) : (
-                                                                        <TableRow>
-                                                                            <TableCell colSpan={4} className="text-center text-muted-foreground py-4">No item details available</TableCell>
-                                                                        </TableRow>
+                                                                        <tr>
+                                                                            <td colSpan={4} className="text-center text-gray-400 py-4">No item details available</td>
+                                                                        </tr>
                                                                     )}
-                                                                </TableBody>
-                                                            </Table>
+                                                                </tbody>
+                                                            </table>
                                                         </div>
                                                     </div>
-                                                </TableCell>
-                                            </TableRow>
+                                                </td>
+                                            </tr>
                                         )}
                                     </>
                                 );
                             })
                         ) : (
-                            <TableRow>
-                                <TableCell colSpan={5} className="h-64 text-center">
-                                    <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                            <tr>
+                                <td colSpan={5} className="h-64 text-center">
+                                    <div className="flex flex-col items-center justify-center gap-2 text-gray-400">
                                         <AlertCircle className="h-8 w-8 opacity-50" />
                                         <p>No sales found in this period</p>
                                     </div>
-                                </TableCell>
-                            </TableRow>
+                                </td>
+                            </tr>
                         )}
-                    </TableBody>
-                </Table>
+                    </tbody>
+                </table>
             </div>
         </div>
     );
