@@ -115,153 +115,153 @@ export default function Dashboard() {
         <div className="min-h-screen bg-[#F9FAFB] font-sans">
             <Sidebar />
 
-            <main className="flex-1 p-3 md:p-5 lg:p-6 md:ml-64 transition-all duration-300 bg-[#EFF3F9] min-h-screen">
-                <div className="mx-auto max-w-7xl flex flex-col gap-6">
+            <main className="flex-1 p-3 md:p-4 lg:p-5 md:ml-64 transition-all duration-300 bg-[#EFF3F9] min-h-screen">
+                <div className="mx-auto max-w-[1600px] flex flex-col gap-4">
 
                     {/* Header */}
-                    <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-4 rounded-[20px] shadow-sm border border-gray-100">
+                    <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-3 rounded-[20px] shadow-sm border border-gray-100">
                         <div>
-                            <h1 className="text-2xl font-bold tracking-tight text-[#111827]">Dashboard</h1>
-                            <p className="text-gray-500 text-sm">Welcome back, {user.name}</p>
+                            <h1 className="text-xl font-bold tracking-tight text-[#111827]">Dashboard</h1>
+                            <p className="text-gray-500 text-xs">Welcome back, {user.name}</p>
                         </div>
 
-                        <div className="flex items-center gap-3 bg-[#F3F4F6] p-1.5 rounded-full border border-gray-200">
-                            <button onClick={() => changeDate(-1)} className="w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-600 shadow-sm hover:bg-gray-50 transition-colors">
-                                <ChevronLeft className="h-4 w-4" />
+                        <div className="flex items-center gap-3 bg-[#F3F4F6] p-1 rounded-full border border-gray-200">
+                            <button onClick={() => changeDate(-1)} className="w-7 h-7 flex items-center justify-center rounded-full bg-white text-gray-600 shadow-sm hover:bg-gray-50 transition-colors">
+                                <ChevronLeft className="h-3.5 w-3.5" />
                             </button>
-                            <div className="px-4 font-bold text-[#111827] text-sm tracking-wide">
+                            <div className="px-3 font-bold text-[#111827] text-sm tracking-wide">
                                 {formattedDate}
                             </div>
-                            <button onClick={() => changeDate(1)} className="w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-600 shadow-sm hover:bg-gray-50 transition-colors">
-                                <ChevronRight className="h-4 w-4" />
+                            <button onClick={() => changeDate(1)} className="w-7 h-7 flex items-center justify-center rounded-full bg-white text-gray-600 shadow-sm hover:bg-gray-50 transition-colors">
+                                <ChevronRight className="h-3.5 w-3.5" />
                             </button>
                         </div>
                     </header>
 
-                    {/* Stats Sections Container */}
-                    <div className="grid gap-6 lg:grid-cols-5">
+                    {/* Main Content Grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
 
-                        {/* LEFT: Monthly Report (3 cols) */}
-                        <div className="lg:col-span-3 flex flex-col gap-4">
-                            <div className="flex justify-between items-end px-1">
-                                <h3 className="text-sm font-bold text-[#9CA3AF] uppercase tracking-wider">Monthly Report</h3>
-                                <button className="text-xs font-medium text-[#3B82F6] flex items-center gap-1 hover:underline">
-                                    <Download size={12} /> Download Month CSV
-                                </button>
-                            </div>
-                            <div className="grid gap-4 md:grid-cols-3 h-full">
-                                <StatsCard
-                                    title="Net Sale"
-                                    value={`৳${(data?.monthly?.revenue || 0).toLocaleString()}`}
-                                    icon={CircleDollarSign}
-                                    color="#10B981" // Green
-                                    description="Profit"
-                                />
-                                <StatsCard
-                                    title="Net Income"
-                                    value={`৳${(data?.monthly?.profit || 0).toLocaleString()}`}
-                                    icon={BadgeDollarSign}
-                                    color="#0065F4" // Blue
-                                    description="Revenue"
-                                />
-                                <StatsCard
-                                    title="Orders"
-                                    value={data?.monthly?.orders || 0}
-                                    icon={ShoppingCart}
-                                    color="#F59E0B" // Orange
-                                    description={`${data?.monthly?.service_count || 0} Service : ${data?.monthly?.product_count || 0} Product`}
-                                />
-                            </div>
-                        </div>
+                        {/* LEFT COLUMN: Monthly Report (Span 2) */}
+                        <div className="lg:col-span-2 flex flex-col gap-5">
 
-                        {/* RIGHT: Daily Overview (2 cols) */}
-                        <div className="lg:col-span-2 flex flex-col gap-4">
-                            <div className="flex justify-between items-end px-1">
-                                <h3 className="text-sm font-bold text-[#9CA3AF] uppercase tracking-wider">Daily Overview</h3>
-                                <button className="text-xs font-medium text-[#3B82F6] flex items-center gap-1 hover:underline">
-                                    <Download size={12} /> Daily CSV
-                                </button>
-                            </div>
-                            <div className="grid gap-4 grid-cols-2 h-full">
-                                {/* Total Sale Card */}
-                                <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100 flex flex-col justify-center gap-2 h-[160px] relative overflow-hidden group hover:shadow-md transition-shadow">
-                                    <h3 className="text-[#6B7280] font-medium text-sm tracking-wide">Total Sale</h3>
-                                    <div className="flex items-baseline">
-                                        <span className="text-2xl font-extrabold mr-1 text-[#111827]">৳</span>
-                                        <span className="text-3xl font-bold text-[#111827]">
-                                            {(data?.daily?.revenue || 0).toLocaleString()}
-                                        </span>
-                                    </div>
+                            {/* Monthly Cards Section */}
+                            <section className="flex flex-col gap-3">
+                                <div className="flex justify-between items-end px-1">
+                                    <h3 className="text-xs font-bold text-[#9CA3AF] uppercase tracking-wider">Monthly Report</h3>
+                                    <button className="text-xs font-medium text-[#3B82F6] flex items-center gap-1 hover:underline">
+                                        <Download size={12} /> Download Month CSV
+                                    </button>
                                 </div>
-
-                                {/* Total Profit Card */}
-                                <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100 flex flex-col justify-center gap-2 h-[160px] relative overflow-hidden group hover:shadow-md transition-shadow">
-                                    <h3 className="text-[#6B7280] font-medium text-sm tracking-wide">Total Profit</h3>
-                                    <div className="flex items-baseline">
-                                        <span className="text-2xl font-extrabold mr-1 text-[#F97316]">৳</span>
-                                        <span className="text-3xl font-bold text-[#F97316]">
-                                            {(data?.daily?.profit || 0).toLocaleString()}
-                                        </span>
-                                    </div>
+                                <div className="grid gap-4 md:grid-cols-3">
+                                    <StatsCard
+                                        title="Net Sale"
+                                        value={`৳${(data?.monthly?.revenue || 0).toLocaleString()}`}
+                                        icon={CircleDollarSign}
+                                        color="#10B981"
+                                        description="Profit"
+                                    />
+                                    <StatsCard
+                                        title="Net Income"
+                                        value={`৳${(data?.monthly?.profit || 0).toLocaleString()}`}
+                                        icon={BadgeDollarSign}
+                                        color="#0065F4"
+                                        description="Revenue"
+                                    />
+                                    <StatsCard
+                                        title="Orders"
+                                        value={data?.monthly?.orders || 0}
+                                        icon={ShoppingCart}
+                                        color="#F59E0B"
+                                        description={`${data?.monthly?.service_count || 0} Service : ${data?.monthly?.product_count || 0} Product`}
+                                    />
                                 </div>
-                            </div>
-                        </div>
+                            </section>
 
-                    </div>
-
-                    {/* Content Grid */}
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-
-                        {/* Left Column: Charts (4 cols) */}
-                        <div className="col-span-4 flex flex-col gap-6">
-                            {/* Monthly Sales Chart */}
-                            <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100">
+                            {/* Monthly Sales Graph */}
+                            <section className="bg-white rounded-[24px] p-5 shadow-sm border border-gray-100">
                                 <div className="flex justify-between items-center mb-6">
-                                    <h3 className="text-lg font-bold text-[#111827]">Monthly Sales</h3>
-                                    <div className="flex items-center gap-2 bg-gray-50 px-3 py-1 rounded-lg text-sm font-medium text-gray-600">
-                                        <CalendarIcon size={16} />
-                                        {monthName}
+                                    <h3 className="text-base font-bold text-[#111827]">Monthly Sales</h3>
+                                    <div className="relative">
+                                        <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100 transition-colors border border-gray-100">
+                                            <CalendarIcon size={14} />
+                                            <span>{monthName}</span>
+                                            {/* In a real implementation, this would trigger a dropdown */}
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="h-[350px] w-full">
+                                <div className="h-[300px] w-full">
                                     <SalesGraph data={data?.monthly?.graph_data || []} />
                                 </div>
-                            </div>
+                            </section>
 
-                            <div className="grid gap-6 md:grid-cols-2">
-                                {/* Top Products */}
-                                <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100">
+                            {/* Bottom Grid: Top Products & Alerts */}
+                            <section className="grid gap-5 md:grid-cols-2">
+                                <div className="bg-white rounded-[24px] p-5 shadow-sm border border-gray-100">
                                     <div className="flex justify-between items-center mb-4">
-                                        <h3 className="text-lg font-bold text-[#111827]">Top Selling Products</h3>
-                                        <p className="text-xs text-gray-400 font-medium bg-gray-50 px-2 py-1 rounded-md">{monthName}</p>
+                                        <h3 className="text-base font-bold text-[#111827]">Top Selling Products</h3>
+                                        <p className="text-[10px] text-gray-400 font-medium bg-gray-50 px-2 py-1 rounded-md">{monthName}</p>
                                     </div>
                                     <TopProducts products={data?.monthly?.top_products || []} />
                                 </div>
 
-                                {/* Stock Alerts */}
-                                <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100">
+                                <div className="bg-white rounded-[24px] p-5 shadow-sm border border-gray-100">
                                     <div className="flex justify-between items-center mb-4">
-                                        <h3 className="text-lg font-bold text-[#111827] flex items-center gap-2">
-                                            <AlertTriangle className="h-5 w-5 text-red-500" />
+                                        <h3 className="text-base font-bold text-[#111827] flex items-center gap-2">
+                                            <AlertTriangle className="h-4 w-4 text-red-500" />
                                             Stock Alerts
                                         </h3>
                                     </div>
                                     <StockAlerts items={data?.alerts || []} />
                                 </div>
-                            </div>
+                            </section>
                         </div>
 
-                        {/* Right Column: Recent Sales (3 cols) */}
-                        <div className="col-span-3">
-                            <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100 h-full flex flex-col">
-                                <div className="flex flex-row items-center justify-between mb-6">
-                                    <h3 className="text-lg font-bold text-[#111827]">Transactions</h3>
-                                    <Button size="sm" variant="outline" className="h-8 gap-1 rounded-lg" onClick={() => window.open(`/api/export?startDate=${selectedDate}&endDate=${selectedDate}`, '_blank')}>
-                                        <Download className="h-3.5 w-3.5" />
-                                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Export</span>
+                        {/* RIGHT COLUMN: Daily Overview (Span 1) */}
+                        <div className="lg:col-span-1 flex flex-col gap-5 h-full">
+
+                            {/* Daily Cards Section */}
+                            <section className="flex flex-col gap-3">
+                                <div className="flex justify-between items-end px-1">
+                                    <h3 className="text-xs font-bold text-[#9CA3AF] uppercase tracking-wider">Daily Overview</h3>
+                                    <button className="text-xs font-medium text-[#3B82F6] flex items-center gap-1 hover:underline">
+                                        <Download size={12} /> Daily CSV
+                                    </button>
+                                </div>
+                                <div className="grid gap-4 grid-cols-2">
+                                    {/* Total Sale Card */}
+                                    <div className="bg-white rounded-[24px] p-5 shadow-sm border border-gray-100 flex flex-col justify-center gap-1 h-[140px] relative overflow-hidden group hover:shadow-md transition-shadow">
+                                        <h3 className="text-[#6B7280] font-medium text-xs tracking-wide">Total Sale</h3>
+                                        <div className="flex items-baseline">
+                                            <span className="text-xl font-extrabold mr-1 text-[#111827]">৳</span>
+                                            <span className="text-2xl font-bold text-[#111827]">
+                                                {(data?.daily?.revenue || 0).toLocaleString()}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Total Profit Card */}
+                                    <div className="bg-white rounded-[24px] p-5 shadow-sm border border-gray-100 flex flex-col justify-center gap-1 h-[140px] relative overflow-hidden group hover:shadow-md transition-shadow">
+                                        <h3 className="text-[#6B7280] font-medium text-xs tracking-wide">Total Profit</h3>
+                                        <div className="flex items-baseline">
+                                            <span className="text-xl font-extrabold mr-1 text-[#F97316]">৳</span>
+                                            <span className="text-2xl font-bold text-[#F97316]">
+                                                {(data?.daily?.profit || 0).toLocaleString()}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            {/* Transactions Section */}
+                            <section className="bg-white rounded-[24px] p-5 shadow-sm border border-gray-100 flex-1 flex flex-col min-h-[500px]">
+                                <div className="flex flex-row items-center justify-between mb-4">
+                                    <h3 className="text-base font-bold text-[#111827]">Transactions</h3>
+                                    <Button size="sm" variant="outline" className="h-7 gap-1 rounded-lg text-xs" onClick={() => window.open(`/api/export?startDate=${selectedDate}&endDate=${selectedDate}`, '_blank')}>
+                                        <Download className="h-3 w-3" />
+                                        <span>Export</span>
                                     </Button>
                                 </div>
-                                <div className="flex-1 overflow-auto min-h-[400px]">
+                                <div className="flex-1 overflow-auto">
                                     <SalesHistoryTable
                                         sales={data?.daily?.history || []}
                                         canEdit={true}
@@ -276,7 +276,7 @@ export default function Dashboard() {
                                         }}
                                     />
                                 </div>
-                            </div>
+                            </section>
                         </div>
 
                     </div>
