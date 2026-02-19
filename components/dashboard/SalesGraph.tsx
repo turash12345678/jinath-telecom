@@ -16,8 +16,8 @@ export function SalesGraph({ data }: SalesGraphProps) {
     if (!mounted) return <div className="h-[350px] w-full bg-gray-50 animate-pulse rounded-lg" />;
 
     return (
-        <ResponsiveContainer width="100%" height={350}>
-            <LineChart data={data}>
+        <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={data} margin={{ top: 10, right: 30, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
                 <XAxis
                     dataKey="date"
