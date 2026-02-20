@@ -115,7 +115,7 @@ export default function Dashboard() {
         <div className="min-h-screen bg-[#F9FAFB] font-sans">
             <Sidebar />
 
-            <main className="flex-1 p-3 md:p-4 lg:p-5 md:ml-64 transition-all duration-300 bg-[#EFF3F9] min-h-screen">
+            <main className="flex-1 p-3 md:p-4 lg:p-5 pt-20 md:pt-4 lg:pt-5 md:ml-64 transition-all duration-300 bg-[#EFF3F9] min-h-screen">
                 <div className="mx-auto max-w-[1600px] flex flex-col gap-4">
 
                     {/* Header */}
@@ -149,7 +149,7 @@ export default function Dashboard() {
                     </header>
 
                     {/* Main Content Grid */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
 
                         {/* LEFT COLUMN: Monthly Report (Span 2) */}
                         <div className="lg:col-span-2 flex flex-col gap-5">
@@ -162,7 +162,7 @@ export default function Dashboard() {
                                         <Download size={12} /> Download Month CSV
                                     </button>
                                 </div>
-                                <div className="grid gap-4 md:grid-cols-3">
+                                <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
                                     <StatsCard
                                         title="Net Sale"
                                         value={`৳${(data?.monthly?.revenue || 0).toLocaleString()}`}
@@ -222,7 +222,7 @@ export default function Dashboard() {
                             </section>
 
                             {/* Bottom Grid: Top Products & Alerts */}
-                            <section className="grid gap-5 md:grid-cols-2">
+                            <section className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                                 <div className="bg-white rounded-[24px] p-5 shadow-sm border border-gray-100">
                                     <div className="flex justify-between items-center mb-4">
                                         <h3 className="text-base font-bold text-[#111827]">Top Selling Products</h3>

@@ -137,26 +137,24 @@ export default function ServicesPage() {
         <div className="min-h-screen bg-[#F9FAFB]">
             <Sidebar />
 
-            <main className="flex-1 p-3 md:p-5 lg:p-6 md:ml-64 transition-all duration-300 bg-[#EFF3F9] min-h-screen">
+            <main className="flex-1 p-3 md:p-5 lg:p-6 pt-20 md:pt-5 lg:pt-6 md:ml-64 transition-all duration-300 bg-[#EFF3F9] min-h-screen">
                 <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                    <div className="pl-12 lg:pl-0">
-                        <h1 className="text-2xl font-bold text-[#111827]">Services</h1>
-                        <p className="text-[#6B7280] text-sm">Manage service offerings.</p>
+                    <div className="pl-1 md:pl-12 lg:pl-0">
+                        <h1 className="text-xl md:text-2xl font-bold text-[#111827]">Services</h1>
+                        <p className="text-[#6B7280] text-xs md:text-sm">Manage service offerings.</p>
                     </div>
-                    <div className="flex gap-2 items-center flex-wrap w-full md:w-auto">
-                        {/* Search Box */}
-                        <div className="relative">
-                            <input
-                                type="text"
-                                placeholder="Search services..."
-                                className="pl-4 pr-10 py-2 rounded-xl border border-[#E5E7EB] focus:outline-none focus:ring-2 focus:ring-[#0065F4] w-64"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                        </div>
-
+                    <div className="flex gap-2 items-center w-full md:w-auto">
+                        {/* Search Box - full width on mobile */}
+                        <input
+                            type="text"
+                            placeholder="Search services..."
+                            className="flex-1 pl-4 pr-4 py-2.5 rounded-xl border border-[#E5E7EB] focus:outline-none focus:ring-2 focus:ring-[#0065F4] text-sm"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                        {/* Add button desktop only */}
                         <button
-                            className="flex items-center gap-2 px-4 py-2 bg-[#0065F4] text-white rounded-xl font-semibold shadow hover:bg-[#0052cc] transition-colors"
+                            className="hidden md:flex items-center gap-2 px-4 py-2.5 bg-[#0065F4] text-white rounded-xl font-semibold shadow hover:bg-[#0052cc] transition-colors whitespace-nowrap"
                             onClick={openAddModal}
                         >
                             <Plus size={18} /> Add Service
@@ -164,7 +162,8 @@ export default function ServicesPage() {
                     </div>
                 </header>
 
-                <div className="bg-white rounded-3xl shadow-sm border border-[#E5E7EB] overflow-hidden">
+                {/* ======= DESKTOP TABLE ======= */}
+                <div className="hidden md:block bg-white rounded-3xl shadow-sm border border-[#E5E7EB] overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
@@ -187,18 +186,10 @@ export default function ServicesPage() {
                                         <td className="p-4 text-sm font-bold text-[#10B981]">৳{service.price}</td>
                                         <td className="p-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
-                                                <button
-                                                    onClick={() => startEdit(service)}
-                                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                    title="Edit"
-                                                >
+                                                <button onClick={() => startEdit(service)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
                                                     <Pencil size={18} />
                                                 </button>
-                                                <button
-                                                    onClick={() => handleDelete(service.id)}
-                                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                    title="Delete"
-                                                >
+                                                <button onClick={() => handleDelete(service.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
                                                     <Trash2 size={18} />
                                                 </button>
                                             </div>
@@ -216,6 +207,44 @@ export default function ServicesPage() {
                         </table>
                     </div>
                 </div>
+
+                {/* ======= MOBILE CARD VIEW ======= */}
+                <div className="md:hidden flex flex-col gap-3 pb-24">
+                    {filteredServices.length === 0 ? (
+                        <div className="text-center text-gray-400 py-12 bg-white rounded-2xl">
+                            {services.length === 0 ? 'No services yet.' : 'No matching services.'}
+                        </div>
+                    ) : filteredServices.map(service => (
+                        <div key={service.id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <p className="font-semibold text-[#111827] text-base">{service.name}</p>
+                                    <span className="inline-flex items-center mt-1 px-2 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700">
+                                        {service.category_name || 'Uncategorized'}
+                                    </span>
+                                </div>
+                                <div className="flex gap-1 items-center">
+                                    <span className="text-lg font-bold text-emerald-600 mr-2">৳{service.price}</span>
+                                    <button onClick={() => startEdit(service)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
+                                        <Pencil size={16} />
+                                    </button>
+                                    <button onClick={() => handleDelete(service.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg">
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* ======= FLOATING ADD BUTTON (mobile only) ======= */}
+                <button
+                    className="md:hidden fixed bottom-6 right-6 z-40 w-14 h-14 bg-[#0065F4] text-white rounded-full shadow-xl flex items-center justify-center hover:bg-[#0052cc] transition-colors"
+                    onClick={openAddModal}
+                    title="Add Service"
+                >
+                    <Plus size={26} />
+                </button>
 
                 {/* Modal */}
                 {showModal && (

@@ -317,42 +317,38 @@ export default function ProductsPage() {
         <div className="min-h-screen bg-[#F9FAFB]">
             <Sidebar />
 
-            <main className="flex-1 p-3 md:p-5 lg:p-6 md:ml-64 transition-all duration-300 bg-[#EFF3F9] min-h-screen">
+            <main className="flex-1 p-3 md:p-5 lg:p-6 pt-20 md:pt-5 lg:pt-6 md:ml-64 transition-all duration-300 bg-[#EFF3F9] min-h-screen">
                 <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                    <div className="pl-12 lg:pl-0">
-                        <h1 className="text-2xl font-bold text-[#111827]">Products Inventory</h1>
-                        <p className="text-[#6B7280] text-sm">Manage your product catalog and stock.</p>
+                    <div className="pl-1 md:pl-12 lg:pl-0">
+                        <h1 className="text-xl md:text-2xl font-bold text-[#111827]">Products Inventory</h1>
+                        <p className="text-[#6B7280] text-xs md:text-sm">Manage your product catalog and stock.</p>
                         {/* Layer 3 Sidebar */}
                         <ProductDetailsSidebar product={selectedProduct} onClose={() => setSelectedProduct(null)} />
                     </div>
                     <div className="flex flex-col gap-3 w-full md:w-auto">
-                        <div className="flex gap-2 items-center flex-wrap justify-end">
-                            {/* Search Box */}
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    placeholder="Search products..."
-                                    className="pl-4 pr-10 py-2 rounded-xl border border-[#E5E7EB] focus:outline-none focus:ring-2 focus:ring-[#0065F4] w-64"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                />
-                            </div>
-
-
+                        <div className="flex gap-2 items-center">
+                            {/* Search Box - full width on mobile */}
+                            <input
+                                type="text"
+                                placeholder="Search products..."
+                                className="flex-1 pl-4 pr-4 py-2.5 rounded-xl border border-[#E5E7EB] focus:outline-none focus:ring-2 focus:ring-[#0065F4] text-sm"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                            {/* Add button - only on desktop */}
                             <button
-                                className="flex items-center gap-2 px-4 py-2 bg-[#0065F4] text-white rounded-xl font-semibold shadow hover:bg-[#0052cc] transition-colors"
+                                className="hidden md:flex items-center gap-2 px-4 py-2.5 bg-[#0065F4] text-white rounded-xl font-semibold shadow hover:bg-[#0052cc] transition-colors whitespace-nowrap"
                                 onClick={openAddModal}
-                                title="Shortcut: Shift + N"
                             >
                                 <Plus size={18} /> Add Product
                             </button>
                         </div>
 
-                        {/* Filters & Sorting Toolbar */}
-                        <div className="flex flex-wrap items-center gap-2 justify-end bg-white p-2 rounded-xl border border-[#E5E7EB] shadow-sm">
+                        {/* Filters & Sorting Toolbar - scrollable on mobile */}
+                        <div className="flex flex-nowrap md:flex-wrap items-center gap-2 bg-white p-2 rounded-xl border border-[#E5E7EB] shadow-sm overflow-x-auto pb-2">
                             {/* Sort */}
                             <select
-                                className="px-3 py-1.5 rounded-lg border border-[#E5E7EB] text-sm focus:outline-none focus:ring-2 focus:ring-[#0065F4]"
+                                className="px-3 py-1.5 rounded-lg border border-[#E5E7EB] text-sm focus:outline-none focus:ring-2 focus:ring-[#0065F4] shrink-0"
                                 value={sortOption}
                                 onChange={(e) => setSortOption(e.target.value)}
                             >
@@ -363,7 +359,7 @@ export default function ProductsPage() {
 
                             {/* Category Filter */}
                             <select
-                                className="px-3 py-1.5 rounded-lg border border-[#E5E7EB] text-sm focus:outline-none focus:ring-2 focus:ring-[#0065F4]"
+                                className="px-3 py-1.5 rounded-lg border border-[#E5E7EB] text-sm focus:outline-none focus:ring-2 focus:ring-[#0065F4] shrink-0"
                                 value={filterCategory}
                                 onChange={(e) => setFilterCategory(e.target.value)}
                             >
@@ -372,8 +368,8 @@ export default function ProductsPage() {
                             </select>
 
                             {/* Month Filter */}
-                            <div className="flex items-center gap-1 border border-[#E5E7EB] rounded-lg px-2 py-1.5 bg-white">
-                                <span className="text-xs font-medium text-gray-500">Entry Month:</span>
+                            <div className="flex items-center gap-1 border border-[#E5E7EB] rounded-lg px-2 py-1.5 bg-white shrink-0">
+                                <span className="text-xs font-medium text-gray-500">Month:</span>
                                 <input
                                     type="month"
                                     className="text-sm focus:outline-none"
@@ -381,42 +377,12 @@ export default function ProductsPage() {
                                     onChange={(e) => setMonthFilter(e.target.value)}
                                 />
                             </div>
-
-                            {/* Price Range */}
-                            <div className="flex items-center gap-1 border-l border-r border-[#E5E7EB] px-2">
-                                <span className="text-xs font-medium text-gray-500">Price:</span>
-                                <input
-                                    type="number"
-                                    placeholder="Min"
-                                    className="w-16 px-2 py-1 rounded-md border border-[#E5E7EB] text-sm focus:outline-none focus:ring-1 focus:ring-[#0065F4]"
-                                    value={priceMin}
-                                    onChange={(e) => setPriceMin(e.target.value)}
-                                />
-                                <span className="text-gray-400">-</span>
-                                <input
-                                    type="number"
-                                    placeholder="Max"
-                                    className="w-16 px-2 py-1 rounded-md border border-[#E5E7EB] text-sm focus:outline-none focus:ring-1 focus:ring-[#0065F4]"
-                                    value={priceMax}
-                                    onChange={(e) => setPriceMax(e.target.value)}
-                                />
-                            </div>
-
-                            {/* Sell Price Toggle */}
-                            <label className="flex items-center gap-2 cursor-pointer px-2">
-                                <input
-                                    type="checkbox"
-                                    checked={filterBySellPrice}
-                                    onChange={(e) => setFilterBySellPrice(e.target.checked)}
-                                    className="rounded border-gray-300 text-[#0065F4] focus:ring-[#0065F4]"
-                                />
-                                <span className="text-sm text-gray-700">Filter by Sell Price</span>
-                            </label>
                         </div>
                     </div>
                 </header>
 
-                <div className="bg-white rounded-3xl shadow-sm border border-[#E5E7EB] overflow-hidden">
+                {/* ======= DESKTOP TABLE (hidden on mobile) ======= */}
+                <div className="hidden md:block bg-white rounded-3xl shadow-sm border border-[#E5E7EB] overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
@@ -451,27 +417,15 @@ export default function ProductsPage() {
                                         </td>
                                         <td className="p-4 text-sm text-[#4B5563]">
                                             {product.stock_quantity < 10 ? (
-                                                <span className="text-red-600 font-bold flex items-center gap-1">
-                                                    {product.stock_quantity} (Low)
-                                                </span>
-                                            ) : (
-                                                product.stock_quantity
-                                            )}
+                                                <span className="text-red-600 font-bold">{product.stock_quantity} (Low)</span>
+                                            ) : product.stock_quantity}
                                         </td>
                                         <td className="p-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
-                                                <button
-                                                    onClick={() => startEdit(product)}
-                                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                    title="Edit"
-                                                >
+                                                <button onClick={() => startEdit(product)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
                                                     <Pencil size={18} />
                                                 </button>
-                                                <button
-                                                    onClick={() => handleDelete(product.id)}
-                                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                    title="Delete"
-                                                >
+                                                <button onClick={() => handleDelete(product.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
                                                     <Trash2 size={18} />
                                                 </button>
                                             </div>
@@ -489,6 +443,69 @@ export default function ProductsPage() {
                         </table>
                     </div>
                 </div>
+
+                {/* ======= MOBILE CARD VIEW (hidden on desktop) ======= */}
+                <div className="md:hidden flex flex-col gap-3 pb-24">
+                    {filteredProducts.length === 0 ? (
+                        <div className="text-center text-gray-400 py-12 bg-white rounded-2xl">
+                            {products.length === 0 ? 'No products yet.' : 'No matching products.'}
+                        </div>
+                    ) : filteredProducts.map(product => (
+                        <div
+                            key={product.id}
+                            className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100"
+                        >
+                            <div className="flex justify-between items-start mb-2">
+                                <div>
+                                    <button
+                                        className="font-semibold text-[#111827] text-base hover:text-[#0065F4] text-left"
+                                        onClick={() => setSelectedProduct(product)}
+                                    >
+                                        {product.name}
+                                    </button>
+                                    <div className="mt-1">
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                                            {product.category_name || 'Uncategorized'}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="flex gap-1">
+                                    <button onClick={() => startEdit(product)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                                        <Pencil size={16} />
+                                    </button>
+                                    <button onClick={() => handleDelete(product.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-gray-100">
+                                <div>
+                                    <p className="text-[10px] text-gray-400 uppercase tracking-wide">Buy</p>
+                                    <p className="text-sm font-semibold text-gray-700">৳{product.buy_price}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] text-gray-400 uppercase tracking-wide">Sell</p>
+                                    <p className="text-sm font-bold text-emerald-600">৳{product.sell_price}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] text-gray-400 uppercase tracking-wide">Stock</p>
+                                    <p className={`text-sm font-bold ${product.stock_quantity < 10 ? 'text-red-500' : 'text-gray-700'}`}>
+                                        {product.stock_quantity}{product.stock_quantity < 10 ? ' ⚠' : ''}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* ======= FLOATING ADD BUTTON (mobile only) ======= */}
+                <button
+                    className="md:hidden fixed bottom-6 right-6 z-40 w-14 h-14 bg-[#0065F4] text-white rounded-full shadow-xl flex items-center justify-center hover:bg-[#0052cc] transition-colors"
+                    onClick={openAddModal}
+                    title="Add Product"
+                >
+                    <Plus size={26} />
+                </button>
 
                 {/* Product Modal */}
                 {showModal && (
