@@ -464,7 +464,7 @@ export default function ProductsPage() {
                                         </td>
                                         <td className="p-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
-                                                <button onClick={() => startEdit(product)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
+                                                <button onClick={() => setSelectedProduct(product)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View & Edit Details">
                                                     <Pencil size={18} />
                                                 </button>
                                                 <button onClick={() => handleDelete(product.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
@@ -512,10 +512,10 @@ export default function ProductsPage() {
                                     </div>
                                 </div>
                                 <div className="flex gap-1">
-                                    <button onClick={() => startEdit(product)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                                    <button onClick={() => setSelectedProduct(product)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View & Edit Details">
                                         <Pencil size={16} />
                                     </button>
-                                    <button onClick={() => handleDelete(product.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                                    <button onClick={() => handleDelete(product.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
                                         <Trash2 size={16} />
                                     </button>
                                 </div>

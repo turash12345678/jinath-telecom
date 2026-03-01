@@ -186,7 +186,7 @@ export default function ProductDetailsSidebar({ product, onClose }) {
                                                                 type="date"
                                                                 value={editForm.created_at}
                                                                 onChange={e => setEditForm(f => ({ ...f, created_at: e.target.value }))}
-                                                                className="w-full text-xs border border-blue-300 rounded px-1 py-0.5"
+                                                                className="w-full text-xs box-border border border-blue-300 rounded px-2 py-1 focus:outline-none focus:border-blue-500"
                                                             />
                                                             <div className="text-[10px] text-gray-400 uppercase mt-0.5">{log.note || 'Restock'}</div>
                                                         </td>
@@ -195,7 +195,7 @@ export default function ProductDetailsSidebar({ product, onClose }) {
                                                                 type="number"
                                                                 value={editForm.quantity}
                                                                 onChange={e => setEditForm(f => ({ ...f, quantity: parseInt(e.target.value) }))}
-                                                                className="w-14 text-xs border border-blue-300 rounded px-1 py-0.5 text-right"
+                                                                className="w-full min-w-[3rem] text-xs box-border border border-blue-300 rounded px-2 py-1 text-right focus:outline-none focus:border-blue-500"
                                                             />
                                                         </td>
                                                         <td className="px-2 py-2">
@@ -203,7 +203,7 @@ export default function ProductDetailsSidebar({ product, onClose }) {
                                                                 type="number"
                                                                 value={editForm.buy_price}
                                                                 onChange={e => setEditForm(f => ({ ...f, buy_price: parseFloat(e.target.value) }))}
-                                                                className="w-16 text-xs border border-blue-300 rounded px-1 py-0.5 text-right"
+                                                                className="w-full min-w-[4rem] text-xs box-border border border-blue-300 rounded px-2 py-1 text-right focus:outline-none focus:border-blue-500"
                                                             />
                                                         </td>
                                                         <td className="px-2 py-2">
@@ -211,21 +211,21 @@ export default function ProductDetailsSidebar({ product, onClose }) {
                                                                 type="number"
                                                                 value={editForm.sell_price}
                                                                 onChange={e => setEditForm(f => ({ ...f, sell_price: parseFloat(e.target.value) }))}
-                                                                className="w-16 text-xs border border-blue-300 rounded px-1 py-0.5 text-right"
+                                                                className="w-full min-w-[4rem] text-xs box-border border border-blue-300 rounded px-2 py-1 text-right focus:outline-none focus:border-blue-500"
                                                             />
                                                         </td>
-                                                        <td className="px-2 py-2 text-center">
-                                                            <div className="flex items-center justify-center gap-1">
+                                                        <td className="px-2 py-2 text-center align-middle">
+                                                            <div className="flex justify-center gap-1.5">
                                                                 <button
                                                                     onClick={() => handleEditSave(log.id)}
-                                                                    className="p-1 text-emerald-600 hover:bg-emerald-50 rounded"
+                                                                    className="p-1.5 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-md transition-colors"
                                                                     title="Save"
                                                                 >
                                                                     <Check size={14} />
                                                                 </button>
                                                                 <button
                                                                     onClick={() => setEditingLogId(null)}
-                                                                    className="p-1 text-gray-400 hover:bg-gray-100 rounded"
+                                                                    className="p-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-md transition-colors"
                                                                     title="Cancel"
                                                                 >
                                                                     <X size={14} />
