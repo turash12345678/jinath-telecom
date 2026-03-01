@@ -352,25 +352,26 @@ export default function ProductsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#F9FAFB]">
+        <div className="min-h-screen bg-[#EFF3F9]">
             <Sidebar />
 
+            {/* Layer 3 Sidebar - outside header to avoid layout issues */}
+            <ProductDetailsSidebar
+                product={selectedProduct}
+                onClose={() => setSelectedProduct(null)}
+                onEditRequest={() => startEdit(selectedProduct)}
+                categories={categories}
+                ramCategories={ramCategories}
+                romCategories={romCategories}
+                colorCategories={colorCategories}
+                onUpdate={fetchProducts}
+            />
+
             <main className="flex-1 p-3 md:p-5 lg:p-6 pt-20 md:pt-5 lg:pt-6 md:ml-64 transition-all duration-300 bg-[#EFF3F9] min-h-screen">
-                <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                    <div className="pl-1 md:pl-12 lg:pl-0">
+                <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 bg-white px-4 py-3 rounded-[20px] shadow-sm border border-gray-100">
+                    <div>
                         <h1 className="text-xl md:text-2xl font-bold text-[#111827]">Products Inventory</h1>
                         <p className="text-[#6B7280] text-xs md:text-sm">Manage your product catalog and stock.</p>
-                        {/* Layer 3 Sidebar */}
-                        <ProductDetailsSidebar
-                            product={selectedProduct}
-                            onClose={() => setSelectedProduct(null)}
-                            onEditRequest={() => startEdit(selectedProduct)}
-                            categories={categories}
-                            ramCategories={ramCategories}
-                            romCategories={romCategories}
-                            colorCategories={colorCategories}
-                            onUpdate={fetchProducts}
-                        />
                     </div>
                     <div className="flex flex-col gap-3 w-full md:w-auto">
                         <div className="flex gap-2 items-center">
