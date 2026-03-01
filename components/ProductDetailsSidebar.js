@@ -179,94 +179,99 @@ export default function ProductDetailsSidebar({ product, onClose }) {
                                         logs.map((log) => (
                                             <tr key={log.id} className="hover:bg-gray-50/50 transition-colors">
                                                 {editingLogId === log.id ? (
-                                                    // --- EDIT ROW ---
-                                                    <>
-                                                        <td className="px-3 py-2">
-                                                            <input
-                                                                type="date"
-                                                                value={editForm.created_at}
-                                                                onChange={e => setEditForm(f => ({ ...f, created_at: e.target.value }))}
-                                                                className="w-full text-xs box-border border border-blue-300 rounded px-2 py-1 focus:outline-none focus:border-blue-500"
-                                                            />
-                                                            <div className="text-[10px] text-gray-400 uppercase mt-0.5">{log.note || 'Restock'}</div>
-                                                        </td>
-                                                        <td className="px-2 py-2">
-                                                            <input
-                                                                type="number"
-                                                                value={editForm.quantity}
-                                                                onChange={e => setEditForm(f => ({ ...f, quantity: parseInt(e.target.value) }))}
-                                                                className="w-full min-w-[3rem] text-xs box-border border border-blue-300 rounded px-2 py-1 text-right focus:outline-none focus:border-blue-500"
-                                                            />
-                                                        </td>
-                                                        <td className="px-2 py-2">
-                                                            <input
-                                                                type="number"
-                                                                value={editForm.buy_price}
-                                                                onChange={e => setEditForm(f => ({ ...f, buy_price: parseFloat(e.target.value) }))}
-                                                                className="w-full min-w-[4rem] text-xs box-border border border-blue-300 rounded px-2 py-1 text-right focus:outline-none focus:border-blue-500"
-                                                            />
-                                                        </td>
-                                                        <td className="px-2 py-2">
-                                                            <input
-                                                                type="number"
-                                                                value={editForm.sell_price}
-                                                                onChange={e => setEditForm(f => ({ ...f, sell_price: parseFloat(e.target.value) }))}
-                                                                className="w-full min-w-[4rem] text-xs box-border border border-blue-300 rounded px-2 py-1 text-right focus:outline-none focus:border-blue-500"
-                                                            />
-                                                        </td>
-                                                        <td className="px-2 py-2 text-center align-middle">
-                                                            <div className="flex justify-center gap-1.5">
-                                                                <button
-                                                                    onClick={() => handleEditSave(log.id)}
-                                                                    className="p-1.5 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-md transition-colors"
-                                                                    title="Save"
-                                                                >
-                                                                    <Check size={14} />
-                                                                </button>
-                                                                <button
-                                                                    onClick={() => setEditingLogId(null)}
-                                                                    className="p-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-md transition-colors"
-                                                                    title="Cancel"
-                                                                >
-                                                                    <X size={14} />
-                                                                </button>
+                                                    { editingLogId === log.id ? (
+                                                        // --- EDIT ROW FULL WIDTH (Fixes layout breaks) ---
+                                                        <td colSpan="5" className="p-3 bg-blue-50/50">
+                                                            <div className="flex flex-col gap-3">
+                                                                <div className="grid grid-cols-2 gap-3">
+                                                                    <div>
+                                                                        <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Date</label>
+                                                                        <input
+                                                                            type="date"
+                                                                            value={editForm.created_at}
+                                                                            onChange={e => setEditForm(f => ({ ...f, created_at: e.target.value }))}
+                                                                            className="w-full text-xs border border-blue-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                                        />
+                                                                    </div>
+                                                                    <div>
+                                                                        <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Quantity</label>
+                                                                        <input
+                                                                            type="number"
+                                                                            value={editForm.quantity}
+                                                                            onChange={e => setEditForm(f => ({ ...f, quantity: parseInt(e.target.value) }))}
+                                                                            className="w-full text-xs border border-blue-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                                        />
+                                                                    </div>
+                                                                    <div>
+                                                                        <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Buy Price</label>
+                                                                        <input
+                                                                            type="number"
+                                                                            value={editForm.buy_price}
+                                                                            onChange={e => setEditForm(f => ({ ...f, buy_price: parseFloat(e.target.value) }))}
+                                                                            className="w-full text-xs border border-blue-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                                        />
+                                                                    </div>
+                                                                    <div>
+                                                                        <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Sell Price</label>
+                                                                        <input
+                                                                            type="number"
+                                                                            value={editForm.sell_price}
+                                                                            onChange={e => setEditForm(f => ({ ...f, sell_price: parseFloat(e.target.value) }))}
+                                                                            className="w-full text-xs border border-blue-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                                        />
+                                                                    </div>
+                                                                </div>
+
+                                                                <div className="flex items-center justify-end gap-2 pt-2 border-t border-blue-100 mt-1">
+                                                                    <button
+                                                                        onClick={() => setEditingLogId(null)}
+                                                                        className="px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200 bg-gray-100 rounded-md transition-colors"
+                                                                    >
+                                                                        Cancel
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handleEditSave(log.id)}
+                                                                        className="px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors flex items-center gap-1"
+                                                                    >
+                                                                        <Check size={14} /> Save Changes
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                         </td>
-                                                    </>
-                                                ) : (
-                                                    // --- VIEW ROW ---
-                                                    <>
-                                                        <td className="px-3 py-3 text-gray-600">
-                                                            {new Date(log.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-                                                            <div className="text-[10px] text-gray-400 uppercase tracking-wide">{log.note || 'Restock'}</div>
-                                                        </td>
-                                                        <td className="px-2 py-3 text-right font-medium text-gray-900">{log.quantity}</td>
-                                                        <td className="px-2 py-3 text-right text-gray-600">
-                                                            <span className="font-extrabold mr-0.5">৳</span>{log.buy_price}
-                                                        </td>
-                                                        <td className="px-2 py-3 text-right text-emerald-600">
-                                                            <span className="font-extrabold mr-0.5">৳</span>{log.sell_price || '-'}
-                                                        </td>
-                                                        <td className="px-2 py-3 text-center">
-                                                            <div className="flex items-center justify-center gap-1">
-                                                                <button
-                                                                    onClick={() => handleEditClick(log)}
-                                                                    className="p-1 text-blue-500 hover:bg-blue-50 rounded"
-                                                                    title="Edit"
-                                                                >
-                                                                    <Pencil size={13} />
-                                                                </button>
-                                                                <button
-                                                                    onClick={() => handleDelete(log.id)}
-                                                                    className="p-1 text-red-500 hover:bg-red-50 rounded"
-                                                                    title="Delete"
-                                                                >
-                                                                    <Trash2 size={13} />
-                                                                </button>
-                                                            </div>
-                                                        </td>
-                                                    </>
-                                                )}
+                                                    ) : (
+                                                        // --- VIEW ROW ---
+                                                        <>
+                                                            <td className="px-3 py-3 text-gray-600">
+                                                                {new Date(log.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                                                                <div className="text-[10px] text-gray-400 uppercase tracking-wide">{log.note || 'Restock'}</div>
+                                                            </td>
+                                                            <td className="px-2 py-3 text-right font-medium text-gray-900">{log.quantity}</td>
+                                                            <td className="px-2 py-3 text-right text-gray-600">
+                                                                <span className="font-extrabold mr-0.5">৳</span>{log.buy_price}
+                                                            </td>
+                                                            <td className="px-2 py-3 text-right text-emerald-600">
+                                                                <span className="font-extrabold mr-0.5">৳</span>{log.sell_price || '-'}
+                                                            </td>
+                                                            <td className="px-2 py-3 text-center">
+                                                                <div className="flex items-center justify-center gap-1">
+                                                                    <button
+                                                                        onClick={() => handleEditClick(log)}
+                                                                        className="p-1 text-blue-500 hover:bg-blue-50 rounded"
+                                                                        title="Edit"
+                                                                    >
+                                                                        <Pencil size={13} />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handleDelete(log.id)}
+                                                                        className="p-1 text-red-500 hover:bg-red-50 rounded"
+                                                                        title="Delete"
+                                                                    >
+                                                                        <Trash2 size={13} />
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </>
+                                                    )}
                                             </tr>
                                         ))
                                     )}
