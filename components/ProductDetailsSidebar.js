@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { X, Pencil, Trash2, Check, ChevronLeft } from 'lucide-react';
 
-export default function ProductDetailsSidebar({ product, onClose }) {
+export default function ProductDetailsSidebar({ product, onClose, onUpdate, onEditRequest }) {
     const [logs, setLogs] = useState([]);
     const [totalEarned, setTotalEarned] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -113,8 +113,19 @@ export default function ProductDetailsSidebar({ product, onClose }) {
                 {/* Header */}
                 <div className="px-5 py-5 border-b border-gray-100 bg-white shrink-0">
                     <div className="flex justify-between items-start mb-3">
-                        <div>
-                            <h2 className="text-xl font-bold text-gray-900 mb-1">{product.name}</h2>
+                        <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                                <h2 className="text-xl font-bold text-gray-900">{product.name}</h2>
+                                {onEditRequest && (
+                                    <button
+                                        onClick={onEditRequest}
+                                        className="p-1 px-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors flex items-center gap-1 text-[11px] font-medium border border-transparent hover:border-blue-200"
+                                        title="Edit Product Details & Categories"
+                                    >
+                                        <Pencil size={12} /> Edit
+                                    </button>
+                                )}
+                            </div>
                             <p className="text-sm text-gray-500">Inventory Details</p>
                         </div>
                         <button
