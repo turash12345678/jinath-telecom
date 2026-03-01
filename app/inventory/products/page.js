@@ -428,7 +428,6 @@ export default function ProductsPage() {
                                 <tr className="border-b border-[#E5E7EB] bg-[#F9FAFB]">
                                     <th className="p-4 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Product Name</th>
                                     <th className="p-4 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Model</th>
-                                    <th className="p-4 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Spec / IMEI</th>
                                     <th className="p-4 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Buy Price</th>
                                     <th className="p-4 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Sell Price</th>
                                     <th className="p-4 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Stock</th>
@@ -451,24 +450,6 @@ export default function ProductsPage() {
                                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-800">
                                                 {product.category_name || 'N/A'}
                                             </span>
-                                        </td>
-                                        <td className="p-4 text-xs text-[#4B5563]">
-                                            <div className="flex flex-col gap-1.5 items-start">
-                                                {product.ram_name || product.rom_name || product.color_name ? (
-                                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
-                                                        {product.ram_name && <span>{product.ram_name}</span>}
-                                                        {(product.ram_name && product.rom_name) && <span className="text-indigo-300">/</span>}
-                                                        {product.rom_name && <span>{product.rom_name}</span>}
-                                                        {((product.ram_name || product.rom_name) && product.color_name) && <span className="text-indigo-300">|</span>}
-                                                        {product.color_name && <span>{product.color_name}</span>}
-                                                    </span>
-                                                ) : <span className="text-gray-400 italic">No Specs</span>}
-                                                {product.imei && (
-                                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-medium bg-gray-100 text-gray-600 border border-gray-200">
-                                                        IMEI: {product.imei}
-                                                    </span>
-                                                )}
-                                            </div>
                                         </td>
                                         <td className="p-4 text-sm text-[#4B5563]">
                                             <span className="font-extrabold mr-1">৳</span>{product.buy_price}
