@@ -191,59 +191,59 @@ export default function ProductDetailsSidebar({ product, onClose, onUpdate, onEd
                                             <tr key={log.id} className="hover:bg-gray-50/50 transition-colors">
                                                 {editingLogId === log.id ? (
                                                     // --- EDIT ROW FULL WIDTH (Fixes layout breaks) ---
-                                                    <td colSpan="5" className="p-3 bg-blue-50/50">
-                                                        <div className="flex flex-col gap-3">
-                                                            <div className="grid grid-cols-2 gap-3">
+                                                    <td colSpan="5" className="px-6 py-4 bg-white border-b border-gray-100">
+                                                        <div className="flex flex-col gap-4">
+                                                            <div className="grid grid-cols-2 gap-4">
                                                                 <div>
-                                                                    <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Date</label>
+                                                                    <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1.5 tracking-wider">Date</label>
                                                                     <input
                                                                         type="date"
                                                                         value={editForm.created_at}
                                                                         onChange={e => setEditForm(f => ({ ...f, created_at: e.target.value }))}
-                                                                        className="w-full text-xs border border-blue-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                                        className="w-full text-sm font-medium border border-blue-200 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-800 bg-white"
                                                                     />
                                                                 </div>
                                                                 <div>
-                                                                    <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Quantity</label>
+                                                                    <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1.5 tracking-wider">Quantity</label>
                                                                     <input
                                                                         type="number"
                                                                         value={editForm.quantity}
                                                                         onChange={e => setEditForm(f => ({ ...f, quantity: parseInt(e.target.value) }))}
-                                                                        className="w-full text-xs border border-blue-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                                        className="w-full text-sm font-medium border border-blue-200 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-800 bg-white"
                                                                     />
                                                                 </div>
                                                                 <div>
-                                                                    <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Buy Price</label>
+                                                                    <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1.5 tracking-wider">Buy Price</label>
                                                                     <input
                                                                         type="number"
                                                                         value={editForm.buy_price}
                                                                         onChange={e => setEditForm(f => ({ ...f, buy_price: parseFloat(e.target.value) }))}
-                                                                        className="w-full text-xs border border-blue-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                                        className="w-full text-sm font-medium border border-blue-200 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-800 bg-white"
                                                                     />
                                                                 </div>
                                                                 <div>
-                                                                    <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-1">Sell Price</label>
+                                                                    <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1.5 tracking-wider">Sell Price</label>
                                                                     <input
                                                                         type="number"
                                                                         value={editForm.sell_price}
                                                                         onChange={e => setEditForm(f => ({ ...f, sell_price: parseFloat(e.target.value) }))}
-                                                                        className="w-full text-xs border border-blue-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                                        className="w-full text-sm font-medium border border-blue-200 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-800 bg-white"
                                                                     />
                                                                 </div>
                                                             </div>
 
-                                                            <div className="flex items-center justify-end gap-2 pt-2 border-t border-blue-100 mt-1">
+                                                            <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100 mt-2">
                                                                 <button
                                                                     onClick={() => setEditingLogId(null)}
-                                                                    className="px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200 bg-gray-100 rounded-md transition-colors"
+                                                                    className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 bg-gray-50 rounded-md transition-colors"
                                                                 >
                                                                     Cancel
                                                                 </button>
                                                                 <button
                                                                     onClick={() => handleEditSave(log.id)}
-                                                                    className="px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors flex items-center gap-1"
+                                                                    className="px-4 py-2 text-sm font-semibold text-white bg-[#2563EB] hover:bg-blue-700 rounded-md shadow-sm transition-colors flex items-center gap-1.5"
                                                                 >
-                                                                    <Check size={14} /> Save Changes
+                                                                    <Check size={16} strokeWidth={2.5} /> Save Changes
                                                                 </button>
                                                             </div>
                                                         </div>
