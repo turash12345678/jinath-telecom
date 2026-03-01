@@ -1,38 +1,96 @@
-'use strict';
+'use client';
 import React, { useState, useEffect } from 'react';
-import { X, Edit2, Trash2, Check, XCircle } from 'lucide-react';
+import { X, Edit2, Trash2, Check, XCircle, Plus } from 'lucide-react';
 
-export default function CategoryManagerModal({ isOpen, onClose, type, onUpdate }) {
+export default function CategoryManagerModal({ isOpen, onClose, onUpdate }) {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    // Tab state
+    const tabs = [
+        { id: 'product', label: 'Models' },
+        { id: 'ram', label: 'RAM' },
+        { id: 'rom', label: 'ROM' },
+        { id: 'color', label: 'Color' }
+    ];
+    const [activeTab, setActiveTab] = useState('product');
+
+    // Edit state
     const [editingId, setEditingId] = useState(null);
     const [editName, setEditName] = useState('');
+
+    // Add state
+    const [isAdding, setIsAdding] = useState(false);
+    const [newName, setNewName] = useState('');
+
     const [error, setError] = useState('');
 
     useEffect(() => {
         if (isOpen) {
             fetchCategories();
+            setIsAdding(false);
+            setEditingId(null);
+            setError('');
         }
-    }, [isOpen, type]);
+    }, [isOpen, activeTab]); // Automatically fetch when tab changes
 
     const fetchCategories = async () => {
         setLoading(true);
+        setError('');
         try {
-            const res = await fetch(`/api/inventory/categories?type=${type}`);
+            const res = await fetch(`/api/inventory/categories?type=${activeTab}`);
             const data = await res.json();
             if (Array.isArray(data)) {
                 setCategories(data);
+            } else {
+                setCategories([]);
             }
         } catch (error) {
             console.error('Failed to load categories', error);
+            setError('Failed to load data');
         } finally {
             setLoading(false);
         }
     };
 
+    // --- Add ---
+    const handleSaveAdd = async (e) => {
+        if (e) e.preventDefault();
+        if (!newName.trim()) return;
+
+        try {
+            const res = await fetch('/api/inventory/categories', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: newName, type: activeTab }),
+            });
+
+            if (res.ok) {
+                const newCategory = await res.json();
+                setCategories([...categories, newCategory]);
+                setIsAdding(false);
+                setNewName('');
+                if (onUpdate) onUpdate();
+            } else {
+                const err = await res.json();
+                setError(err.error || 'Failed to add');
+            }
+        } catch (error) {
+            setError('Failed to add');
+        }
+    };
+
+    const handleCancelAdd = () => {
+        setIsAdding(false);
+        setNewName('');
+        setError('');
+    }
+
+    // --- Edit ---
     const handleEditClick = (cat) => {
         setEditingId(cat.id);
         setEditName(cat.name);
+        setIsAdding(false); // cancel adding if editing
     };
 
     const handleCancelEdit = () => {
@@ -64,8 +122,9 @@ export default function CategoryManagerModal({ isOpen, onClose, type, onUpdate }
         }
     };
 
+    // --- Delete ---
     const handleDelete = async (id) => {
-        if (!confirm('Are you sure? Products in this category will become Uncategorized.')) return;
+        if (!confirm('Are you sure? Removing this will affect products using it.')) return;
 
         try {
             const res = await fetch(`/api/inventory/categories?id=${id}`, {
@@ -76,6 +135,7 @@ export default function CategoryManagerModal({ isOpen, onClose, type, onUpdate }
                 setCategories(categories.filter(c => c.id !== id));
                 if (onUpdate) onUpdate();
             } else {
+                // Usually blocked if there are products attached
                 const err = await res.json();
                 setError(err.error || 'Failed to delete');
             }
@@ -87,54 +147,112 @@ export default function CategoryManagerModal({ isOpen, onClose, type, onUpdate }
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[80vh] flex flex-col">
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold">Manage Categories</h2>
-                    <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full">
-                        <X size={20} />
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[70] backdrop-blur-sm p-4">
+            <div className="bg-white rounded-2xl w-full max-w-lg flex flex-col max-h-[85vh] shadow-xl animate-in fade-in zoom-in duration-200">
+
+                {/* Header */}
+                <div className="flex justify-between items-center p-6 border-b border-gray-100 shrink-0">
+                    <div>
+                        <h2 className="text-xl font-bold text-gray-900">Manage Categories & Specs</h2>
+                        <p className="text-xs text-gray-500 mt-1">Add, edit, or remove dropdown options.</p>
+                    </div>
+                    <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">
+                        <X size={24} />
                     </button>
                 </div>
 
-                {error && (
-                    <div className="bg-red-100 text-red-700 p-2 rounded mb-3 text-sm">
-                        {error}
-                    </div>
-                )}
+                {/* Tabs */}
+                <div className="flex px-6 pt-4 border-b border-gray-100 gap-6 overflow-x-auto shrink-0 hide-scrollbar">
+                    {tabs.map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`pb-3 text-sm font-semibold whitespace-nowrap transition-colors border-b-2 ${activeTab === tab.id
+                                    ? 'border-blue-600 text-blue-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                                }`}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
 
-                <div className="flex-1 overflow-y-auto">
+                {/* Content Area */}
+                <div className="p-6 flex-1 overflow-y-auto bg-gray-50">
+
+                    {error && (
+                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4 text-sm flex items-center justify-between">
+                            <span>{error}</span>
+                            <button onClick={() => setError('')}><X size={16} /></button>
+                        </div>
+                    )}
+
+                    {/* Add New Button/Form */}
+                    {!isAdding ? (
+                        <button
+                            onClick={() => setIsAdding(true)}
+                            className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-white border border-dashed border-gray-300 rounded-xl text-blue-600 font-medium hover:border-blue-400 hover:bg-blue-50 transition-colors mb-4"
+                        >
+                            <Plus size={18} />
+                            Add New {tabs.find(t => t.id === activeTab)?.label}
+                        </button>
+                    ) : (
+                        <form onSubmit={handleSaveAdd} className="bg-white p-3 rounded-xl border border-blue-200 shadow-sm mb-4 flex gap-2 animate-in slide-in-from-top-2">
+                            <input
+                                type="text"
+                                value={newName}
+                                onChange={(e) => setNewName(e.target.value)}
+                                placeholder="Enter name..."
+                                className="flex-1 px-3 py-2 text-sm border-none focus:ring-0 bg-transparent outline-none"
+                                autoFocus
+                            />
+                            <div className="flex gap-1 shrink-0">
+                                <button type="button" onClick={handleCancelAdd} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg">
+                                    <XCircle size={20} />
+                                </button>
+                                <button type="submit" className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg font-bold flex items-center gap-1">
+                                    <Check size={20} />
+                                    <span>Save</span>
+                                </button>
+                            </div>
+                        </form>
+                    )}
+
+                    {/* List */}
                     {loading ? (
-                        <p className="text-center text-gray-500 py-4">Loading...</p>
+                        <div className="text-center py-8 text-gray-400">Loading...</div>
                     ) : categories.length === 0 ? (
-                        <p className="text-center text-gray-500 py-4">No categories found.</p>
+                        <div className="text-center py-8 text-gray-400 bg-white rounded-xl border border-gray-100 border-dashed">
+                            No items found in this category.
+                        </div>
                     ) : (
                         <ul className="space-y-2">
                             {categories.map((cat) => (
-                                <li key={cat.id} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded border border-gray-100">
+                                <li key={cat.id} className="bg-white px-4 py-3 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between group">
                                     {editingId === cat.id ? (
                                         <div className="flex items-center flex-1 gap-2">
                                             <input
                                                 type="text"
                                                 value={editName}
                                                 onChange={(e) => setEditName(e.target.value)}
-                                                className="flex-1 border rounded px-2 py-1 text-sm"
+                                                className="flex-1 border-b-2 border-blue-500 px-1 py-1 text-sm text-gray-900 focus:outline-none bg-blue-50"
                                                 autoFocus
                                             />
-                                            <button onClick={() => handleSaveEdit(cat.id)} className="text-green-600 hover:text-green-800 p-1">
+                                            <button onClick={() => handleSaveEdit(cat.id)} className="text-emerald-600 hover:bg-emerald-50 p-1.5 rounded-lg transition-colors">
                                                 <Check size={18} />
                                             </button>
-                                            <button onClick={handleCancelEdit} className="text-gray-500 hover:text-gray-700 p-1">
+                                            <button onClick={handleCancelEdit} className="text-gray-400 hover:bg-gray-100 p-1.5 rounded-lg transition-colors">
                                                 <XCircle size={18} />
                                             </button>
                                         </div>
                                     ) : (
                                         <>
                                             <span className="font-medium text-gray-700">{cat.name}</span>
-                                            <div className="flex items-center gap-1">
-                                                <button onClick={() => handleEditClick(cat)} className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50" title="Edit">
+                                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button onClick={() => handleEditClick(cat)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded-lg transition-colors" title="Edit">
                                                     <Edit2 size={16} />
                                                 </button>
-                                                <button onClick={() => handleDelete(cat.id)} className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50" title="Delete">
+                                                <button onClick={() => handleDelete(cat.id)} className="text-red-500 hover:bg-red-50 p-1.5 rounded-lg transition-colors" title="Delete">
                                                     <Trash2 size={16} />
                                                 </button>
                                             </div>
@@ -144,10 +262,6 @@ export default function CategoryManagerModal({ isOpen, onClose, type, onUpdate }
                             ))}
                         </ul>
                     )}
-                </div>
-
-                <div className="mt-4 pt-4 border-t text-xs text-gray-500">
-                    Deleting a category will remove it from all assigned products.
                 </div>
             </div>
         </div>

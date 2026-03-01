@@ -36,10 +36,7 @@ export default function ProductsPage() {
         created_at: stickyDate
     });
 
-    const [showCategoryModal, setShowCategoryModal] = useState(false);
     const [showCategoryManager, setShowCategoryManager] = useState(false);
-    const [activeCategoryType, setActiveCategoryType] = useState('product'); // 'product' (Model), 'ram', 'rom', 'color'
-    const [newCategoryName, setNewCategoryName] = useState('');
 
     // Filter & Sort State
     const [filterCategory, setFilterCategory] = useState('');
@@ -89,40 +86,6 @@ export default function ProductsPage() {
         setRamCategories(ramData);
         setRomCategories(romData);
         setColorCategories(colorData);
-    };
-
-    const handleAddCategory = async (e) => {
-        e.preventDefault();
-        if (!newCategoryName.trim()) return;
-
-        const res = await fetch('/api/inventory/categories', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: newCategoryName, type: activeCategoryType }),
-        });
-
-        if (res.ok) {
-            const newCategory = await res.json();
-
-            if (activeCategoryType === 'product') {
-                setCategories([...categories, newCategory]);
-                setFormData({ ...formData, category_id: newCategory.id });
-            } else if (activeCategoryType === 'ram') {
-                setRamCategories([...ramCategories, newCategory]);
-                setFormData({ ...formData, ram_id: newCategory.id });
-            } else if (activeCategoryType === 'rom') {
-                setRomCategories([...romCategories, newCategory]);
-                setFormData({ ...formData, rom_id: newCategory.id });
-            } else if (activeCategoryType === 'color') {
-                setColorCategories([...colorCategories, newCategory]);
-                setFormData({ ...formData, color_id: newCategory.id });
-            }
-
-            setShowCategoryModal(false);
-            setNewCategoryName('');
-        } else {
-            alert('Failed to add category');
-        }
     };
 
     // Helper: Normalize Bangla numbers to English
@@ -650,9 +613,19 @@ export default function ProductsPage() {
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
-                                    {/* Model (was Category) */}
+                                    {/* Model */}
                                     <div>
-                                        <label className="block text-sm font-medium text-[#374151] mb-1">Model</label>
+                                        <div className="flex items-center justify-between mb-1">
+                                            <label className="block text-sm font-medium text-[#374151]">Model</label>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowCategoryManager(true)}
+                                                className="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                                                tabIndex={-1}
+                                            >
+                                                <Settings size={14} /> Manage Specs
+                                            </button>
+                                        </div>
                                         <div className="flex gap-2">
                                             <select
                                                 className="w-full px-4 py-2 rounded-xl border border-[#D1D5DB] focus:outline-none focus:ring-2 focus:ring-[#0065F4] transition-shadow bg-white"
@@ -662,24 +635,6 @@ export default function ProductsPage() {
                                                 <option value="">Select Model</option>
                                                 {(Array.isArray(categories) ? categories : []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                                             </select>
-                                            <button
-                                                type="button"
-                                                className="px-3 py-2 bg-[#F3F4F6] text-[#4B5563] rounded-xl hover:bg-[#E5E7EB] transition-colors"
-                                                onClick={() => { setActiveCategoryType('product'); setShowCategoryModal(true); }}
-                                                title="Add New Model"
-                                                tabIndex={-1}
-                                            >
-                                                <Plus size={20} />
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="px-3 py-2 bg-[#F3F4F6] text-[#4B5563] rounded-xl hover:bg-[#E5E7EB] transition-colors"
-                                                onClick={() => { setActiveCategoryType('product'); setShowCategoryManager(true); }}
-                                                title="Manage Models"
-                                                tabIndex={-1}
-                                            >
-                                                <Settings size={20} />
-                                            </button>
                                         </div>
                                     </div>
 
@@ -695,15 +650,6 @@ export default function ProductsPage() {
                                                 <option value="">None</option>
                                                 {(Array.isArray(ramCategories) ? ramCategories : []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                                             </select>
-                                            <button
-                                                type="button"
-                                                className="px-3 py-2 bg-[#F3F4F6] text-[#4B5563] rounded-xl hover:bg-[#E5E7EB] transition-colors"
-                                                onClick={() => { setActiveCategoryType('ram'); setShowCategoryModal(true); }}
-                                                title="Add New RAM"
-                                                tabIndex={-1}
-                                            >
-                                                <Plus size={20} />
-                                            </button>
                                         </div>
                                     </div>
 
@@ -719,15 +665,6 @@ export default function ProductsPage() {
                                                 <option value="">None</option>
                                                 {(Array.isArray(romCategories) ? romCategories : []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                                             </select>
-                                            <button
-                                                type="button"
-                                                className="px-3 py-2 bg-[#F3F4F6] text-[#4B5563] rounded-xl hover:bg-[#E5E7EB] transition-colors"
-                                                onClick={() => { setActiveCategoryType('rom'); setShowCategoryModal(true); }}
-                                                title="Add New ROM"
-                                                tabIndex={-1}
-                                            >
-                                                <Plus size={20} />
-                                            </button>
                                         </div>
                                     </div>
 
@@ -743,15 +680,6 @@ export default function ProductsPage() {
                                                 <option value="">None</option>
                                                 {(Array.isArray(colorCategories) ? colorCategories : []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                                             </select>
-                                            <button
-                                                type="button"
-                                                className="px-3 py-2 bg-[#F3F4F6] text-[#4B5563] rounded-xl hover:bg-[#E5E7EB] transition-colors"
-                                                onClick={() => { setActiveCategoryType('color'); setShowCategoryModal(true); }}
-                                                title="Add New Color"
-                                                tabIndex={-1}
-                                            >
-                                                <Plus size={20} />
-                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -833,35 +761,9 @@ export default function ProductsPage() {
                         </div>
                     </div>
                 )}
-                {/* Category Modal */}
-                {showCategoryModal && (
-                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-                        <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 animate-in fade-in zoom-in duration-200">
-                            <h2 className="text-lg font-bold text-[#111827] mb-4">Add New {activeCategoryType === 'product' ? 'Model' : activeCategoryType.toUpperCase()}</h2>
-                            <form onSubmit={handleAddCategory} className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-[#374151] mb-1">Name</label>
-                                    <input
-                                        className="w-full px-4 py-2 rounded-xl border border-[#D1D5DB] focus:outline-none focus:ring-2 focus:ring-[#0065F4] transition-shadow"
-                                        required
-                                        value={newCategoryName}
-                                        onChange={e => setNewCategoryName(e.target.value)}
-                                        autoFocus
-                                        placeholder="e.g. Clothing"
-                                    />
-                                </div>
-                                <div className="flex gap-3 justify-end pt-2">
-                                    <button type="button" className="px-4 py-2 bg-white border border-[#D1D5DB] text-[#374151] rounded-xl font-medium hover:bg-[#F9FAFB] transition-colors" onClick={() => setShowCategoryModal(false)}>Cancel</button>
-                                    <button type="submit" className="px-4 py-2 bg-[#0065F4] text-white rounded-xl font-bold shadow hover:bg-[#0052cc] transition-colors">Add</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                )}
                 <CategoryManagerModal
                     isOpen={showCategoryManager}
                     onClose={() => setShowCategoryManager(false)}
-                    type={activeCategoryType}
                     onUpdate={fetchCategories}
                 />
             </main>
