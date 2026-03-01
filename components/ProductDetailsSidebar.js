@@ -154,15 +154,6 @@ export default function ProductDetailsSidebar({ product, onClose, onUpdate, onEd
                         <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
                                 <h2 className="text-xl font-bold text-gray-900">{product.name}</h2>
-                                {onEditRequest && (
-                                    <button
-                                        onClick={onEditRequest}
-                                        className="p-1 px-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors flex items-center gap-1 text-[11px] font-medium border border-transparent hover:border-blue-200"
-                                        title="Edit Product Details & Categories"
-                                    >
-                                        <Pencil size={12} /> Edit
-                                    </button>
-                                )}
                             </div>
                             <p className="text-sm text-gray-500">Inventory Details</p>
                         </div>
@@ -172,30 +163,6 @@ export default function ProductDetailsSidebar({ product, onClose, onUpdate, onEd
                         >
                             <X size={20} />
                         </button>
-                    </div>
-
-                    {/* Integrated Specs Banner */}
-                    <div className="flex flex-wrap gap-2">
-                        {product.category_name && (
-                            <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100 cursor-default" title="Model">
-                                {product.category_name}
-                            </span>
-                        )}
-                        {(product.ram_name || product.rom_name) && (
-                            <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100 cursor-default" title="RAM / ROM">
-                                {product.ram_name || 'N/A'}/{product.rom_name || 'N/A'}
-                            </span>
-                        )}
-                        {product.color_name && (
-                            <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 cursor-default" title="Color">
-                                {product.color_name}
-                            </span>
-                        )}
-                        {product.imei && (
-                            <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-mono font-medium bg-gray-100 text-gray-600 border border-gray-200 cursor-default" title="IMEI Number">
-                                IMEI: {product.imei}
-                            </span>
-                        )}
                     </div>
                 </div>
 
