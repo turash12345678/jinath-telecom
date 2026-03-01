@@ -127,6 +127,38 @@ export default function ProductDetailsSidebar({ product, onClose }) {
                 {/* Content - Scrollable */}
                 <div className="flex-1 overflow-y-auto p-5">
 
+                    {/* Device Specs Details */}
+                    <div className="mb-6 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                        <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                            <span className="w-1 h-4 bg-purple-500 rounded-full"></span>
+                            Device Details
+                        </h3>
+                        <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
+                            <div>
+                                <span className="text-gray-500 block text-xs mb-0.5">Model</span>
+                                <span className="font-medium text-gray-900">{product.category_name || 'N/A'}</span>
+                            </div>
+                            <div>
+                                <span className="text-gray-500 block text-xs mb-0.5">RAM</span>
+                                <span className="font-medium text-gray-900">{product.ram_name || 'N/A'}</span>
+                            </div>
+                            <div>
+                                <span className="text-gray-500 block text-xs mb-0.5">ROM</span>
+                                <span className="font-medium text-gray-900">{product.rom_name || 'N/A'}</span>
+                            </div>
+                            <div>
+                                <span className="text-gray-500 block text-xs mb-0.5">Color</span>
+                                <span className="font-medium text-gray-900">{product.color_name || 'N/A'}</span>
+                            </div>
+                            {product.imei && (
+                                <div className="col-span-2 mt-1 pt-2 border-t border-gray-50">
+                                    <span className="text-gray-500 block text-xs mb-0.5">IMEI Number</span>
+                                    <span className="font-mono text-gray-700 bg-gray-50 px-2 py-1 rounded-md block">{product.imei}</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
                     {/* Batch History Table */}
                     <div className="mb-6">
                         <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">

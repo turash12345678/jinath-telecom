@@ -9,6 +9,9 @@ import ProductDetailsSidebar from '@/components/ProductDetailsSidebar';
 export default function ProductsPage() {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [ramCategories, setRamCategories] = useState([]);
+    const [romCategories, setRomCategories] = useState([]);
+    const [colorCategories, setColorCategories] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [editId, setEditId] = useState(null);
@@ -23,6 +26,10 @@ export default function ProductsPage() {
     const [formData, setFormData] = useState({
         name: '',
         category_id: '',
+        ram_id: '',
+        rom_id: '',
+        color_id: '',
+        imei: '',
         buy_price: '',
         sell_price: '',
         stock_quantity: '',
@@ -31,6 +38,7 @@ export default function ProductsPage() {
 
     const [showCategoryModal, setShowCategoryModal] = useState(false);
     const [showCategoryManager, setShowCategoryManager] = useState(false);
+    const [activeCategoryType, setActiveCategoryType] = useState('product'); // 'product' (Model), 'ram', 'rom', 'color'
     const [newCategoryName, setNewCategoryName] = useState('');
 
     // Filter & Sort State
@@ -65,9 +73,22 @@ export default function ProductsPage() {
     };
 
     const fetchCategories = async () => {
-        const res = await fetch('/api/inventory/categories?type=product');
-        const data = await res.json();
-        setCategories(data);
+        // Fetch all needed categories concurrently
+        const [prodRes, ramRes, romRes, colorRes] = await Promise.all([
+            fetch('/api/inventory/categories?type=product'),
+            fetch('/api/inventory/categories?type=ram'),
+            fetch('/api/inventory/categories?type=rom'),
+            fetch('/api/inventory/categories?type=color'),
+        ]);
+
+        const [prodData, ramData, romData, colorData] = await Promise.all([
+            prodRes.json(), ramRes.json(), romRes.json(), colorRes.json()
+        ]);
+
+        setCategories(prodData);
+        setRamCategories(ramData);
+        setRomCategories(romData);
+        setColorCategories(colorData);
     };
 
     const handleAddCategory = async (e) => {
@@ -77,13 +98,26 @@ export default function ProductsPage() {
         const res = await fetch('/api/inventory/categories', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: newCategoryName, type: 'product' }),
+            body: JSON.stringify({ name: newCategoryName, type: activeCategoryType }),
         });
 
         if (res.ok) {
             const newCategory = await res.json();
-            setCategories([...categories, newCategory]);
-            setFormData({ ...formData, category_id: newCategory.id });
+
+            if (activeCategoryType === 'product') {
+                setCategories([...categories, newCategory]);
+                setFormData({ ...formData, category_id: newCategory.id });
+            } else if (activeCategoryType === 'ram') {
+                setRamCategories([...ramCategories, newCategory]);
+                setFormData({ ...formData, ram_id: newCategory.id });
+            } else if (activeCategoryType === 'rom') {
+                setRomCategories([...romCategories, newCategory]);
+                setFormData({ ...formData, rom_id: newCategory.id });
+            } else if (activeCategoryType === 'color') {
+                setColorCategories([...colorCategories, newCategory]);
+                setFormData({ ...formData, color_id: newCategory.id });
+            }
+
             setShowCategoryModal(false);
             setNewCategoryName('');
         } else {
@@ -189,10 +223,14 @@ export default function ProductsPage() {
             if (formData.created_at) setStickyDate(formData.created_at);
 
             setShowModal(false);
-            // Reset form but keep sticky date AND category
+            // Reset form but keep sticky date AND category/model
             setFormData({
                 name: '',
-                category_id: formData.category_id || '', // Keep Category
+                category_id: formData.category_id || '', // Keep Model
+                ram_id: formData.ram_id || '',
+                rom_id: formData.rom_id || '',
+                color_id: formData.color_id || '',
+                imei: '',
                 buy_price: '',
                 sell_price: '',
                 stock_quantity: '',
@@ -211,6 +249,10 @@ export default function ProductsPage() {
         setFormData({
             name: product.name,
             category_id: product.category_id || '',
+            ram_id: product.ram_id || '',
+            rom_id: product.rom_id || '',
+            color_id: product.color_id || '',
+            imei: product.imei || '',
             buy_price: product.buy_price,
             sell_price: product.sell_price,
             stock_quantity: product.stock_quantity,
@@ -238,7 +280,11 @@ export default function ProductsPage() {
     const openAddModal = () => {
         setFormData({
             name: '',
-            category_id: formData.category_id || '', // Use existing category if available (sticky)
+            category_id: formData.category_id || '', // Use existing model if available (sticky)
+            ram_id: formData.ram_id || '',
+            rom_id: formData.rom_id || '',
+            color_id: formData.color_id || '',
+            imei: '',
             buy_price: '',
             sell_price: '',
             stock_quantity: '',
@@ -253,6 +299,12 @@ export default function ProductsPage() {
 
     // Search State
     const [searchQuery, setSearchQuery] = useState('');
+    const [highlightedIndex, setHighlightedIndex] = useState(0);
+
+    // Reset highlight when filters change
+    useEffect(() => {
+        setHighlightedIndex(0);
+    }, [searchQuery, filterCategory, sortOption, priceMin, priceMax, monthFilter]);
 
     const filteredProducts = products.filter(product => {
         const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -299,6 +351,10 @@ export default function ProductsPage() {
             setFormData({
                 name: '',
                 category_id: formData.category_id || '',
+                ram_id: formData.ram_id || '',
+                rom_id: formData.rom_id || '',
+                color_id: formData.color_id || '',
+                imei: '',
                 buy_price: '',
                 sell_price: '',
                 stock_quantity: '',
@@ -310,6 +366,25 @@ export default function ProductsPage() {
         } else {
             const result = await res.json();
             alert('Failed to restock: ' + (result.error || result.message));
+        }
+    };
+
+    const handleSearchKeyDown = (e) => {
+        if (filteredProducts.length === 0) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            setHighlightedIndex(prev => Math.min(prev + 1, filteredProducts.length - 1));
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            setHighlightedIndex(prev => Math.max(prev - 1, 0));
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (filteredProducts[highlightedIndex]) {
+                const product = filteredProducts[highlightedIndex];
+                setSelectedProduct(product); // Opens the details sidebar
+                e.target.blur(); // Remove focus
+            }
         }
     };
 
@@ -330,10 +405,11 @@ export default function ProductsPage() {
                             {/* Search Box - full width on mobile */}
                             <input
                                 type="text"
-                                placeholder="Search products..."
+                                placeholder="Search (Up/Down arrow to select, Enter to view)..."
                                 className="flex-1 pl-4 pr-4 py-2.5 rounded-xl border border-[#E5E7EB] focus:outline-none focus:ring-2 focus:ring-[#0065F4] text-sm"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
+                                onKeyDown={handleSearchKeyDown}
                             />
                             {/* Add button - only on desktop */}
                             <button
@@ -388,7 +464,8 @@ export default function ProductsPage() {
                             <thead>
                                 <tr className="border-b border-[#E5E7EB] bg-[#F9FAFB]">
                                     <th className="p-4 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Product Name</th>
-                                    <th className="p-4 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Category</th>
+                                    <th className="p-4 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Model</th>
+                                    <th className="p-4 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Spec / IMEI</th>
                                     <th className="p-4 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Buy Price</th>
                                     <th className="p-4 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Sell Price</th>
                                     <th className="p-4 text-xs font-bold text-[#6B7280] uppercase tracking-wider">Stock</th>
@@ -396,8 +473,11 @@ export default function ProductsPage() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#E5E7EB]">
-                                {filteredProducts.map(product => (
-                                    <tr key={product.id} className="hover:bg-[#F9FAFB] transition-colors">
+                                {filteredProducts.map((product, index) => (
+                                    <tr
+                                        key={product.id}
+                                        className={`transition-colors ${highlightedIndex === index ? 'bg-blue-50 ring-1 ring-blue-200' : 'hover:bg-[#F9FAFB]'}`}
+                                    >
                                         <td
                                             className="p-4 text-sm font-medium text-[#111827] cursor-pointer hover:text-[#0065F4] transition-colors"
                                             onClick={() => setSelectedProduct(product)}
@@ -406,8 +486,18 @@ export default function ProductsPage() {
                                         </td>
                                         <td className="p-4 text-sm text-[#4B5563]">
                                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-800">
-                                                {product.category_name || 'Uncategorized'}
+                                                {product.category_name || 'N/A'}
                                             </span>
+                                        </td>
+                                        <td className="p-4 text-xs text-[#4B5563]">
+                                            <div className="flex flex-col gap-1">
+                                                {product.ram_name || product.rom_name ? (
+                                                    <span>{product.ram_name || 'N/A'}/{product.rom_name || 'N/A'}</span>
+                                                ) : null}
+                                                {product.imei ? (
+                                                    <span className="text-gray-400 font-mono">{product.imei}</span>
+                                                ) : null}
+                                            </div>
                                         </td>
                                         <td className="p-4 text-sm text-[#4B5563]">
                                             <span className="font-extrabold mr-1">৳</span>{product.buy_price}
@@ -450,10 +540,10 @@ export default function ProductsPage() {
                         <div className="text-center text-gray-400 py-12 bg-white rounded-2xl">
                             {products.length === 0 ? 'No products yet.' : 'No matching products.'}
                         </div>
-                    ) : filteredProducts.map(product => (
+                    ) : filteredProducts.map((product, index) => (
                         <div
                             key={product.id}
-                            className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100"
+                            className={`rounded-2xl p-4 shadow-sm border ${highlightedIndex === index ? 'bg-blue-50 border-[#0065F4]' : 'bg-white border-gray-100'}`}
                         >
                             <div className="flex justify-between items-start mb-2">
                                 <div>
@@ -558,38 +648,125 @@ export default function ProductsPage() {
                                         </div>
                                     )}
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-[#374151] mb-1">Category</label>
-                                    <div className="flex gap-2">
-                                        <select
-                                            className="w-full px-4 py-2 rounded-xl border border-[#D1D5DB] focus:outline-none focus:ring-2 focus:ring-[#0065F4] transition-shadow bg-white"
-                                            value={formData.category_id}
-                                            onChange={e => setFormData({ ...formData, category_id: e.target.value })}
-                                        >
-                                            <option value="">Select Category</option>
-                                            {(Array.isArray(categories) ? categories : []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                                        </select>
-                                        <button
-                                            type="button"
-                                            className="px-3 py-2 bg-[#F3F4F6] text-[#4B5563] rounded-xl hover:bg-[#E5E7EB] transition-colors"
-                                            onClick={() => setShowCategoryModal(true)}
-                                            title="Add New Category"
-                                            tabIndex={-1} // Skip tab index
-                                        >
-                                            <Plus size={20} />
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="px-3 py-2 bg-[#F3F4F6] text-[#4B5563] rounded-xl hover:bg-[#E5E7EB] transition-colors"
-                                            onClick={() => setShowCategoryManager(true)}
-                                            title="Manage Categories (Edit/Delete)"
-                                            tabIndex={-1} // Skip tab index
-                                        >
-                                            <Settings size={20} />
-                                        </button>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    {/* Model (was Category) */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-[#374151] mb-1">Model</label>
+                                        <div className="flex gap-2">
+                                            <select
+                                                className="w-full px-4 py-2 rounded-xl border border-[#D1D5DB] focus:outline-none focus:ring-2 focus:ring-[#0065F4] transition-shadow bg-white"
+                                                value={formData.category_id}
+                                                onChange={e => setFormData({ ...formData, category_id: e.target.value })}
+                                            >
+                                                <option value="">Select Model</option>
+                                                {(Array.isArray(categories) ? categories : []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                            </select>
+                                            <button
+                                                type="button"
+                                                className="px-3 py-2 bg-[#F3F4F6] text-[#4B5563] rounded-xl hover:bg-[#E5E7EB] transition-colors"
+                                                onClick={() => { setActiveCategoryType('product'); setShowCategoryModal(true); }}
+                                                title="Add New Model"
+                                                tabIndex={-1}
+                                            >
+                                                <Plus size={20} />
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="px-3 py-2 bg-[#F3F4F6] text-[#4B5563] rounded-xl hover:bg-[#E5E7EB] transition-colors"
+                                                onClick={() => { setActiveCategoryType('product'); setShowCategoryManager(true); }}
+                                                title="Manage Models"
+                                                tabIndex={-1}
+                                            >
+                                                <Settings size={20} />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* RAM */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-[#374151] mb-1">RAM</label>
+                                        <div className="flex gap-2">
+                                            <select
+                                                className="w-full px-4 py-2 rounded-xl border border-[#D1D5DB] focus:outline-none focus:ring-2 focus:ring-[#0065F4] transition-shadow bg-white"
+                                                value={formData.ram_id}
+                                                onChange={e => setFormData({ ...formData, ram_id: e.target.value })}
+                                            >
+                                                <option value="">None</option>
+                                                {(Array.isArray(ramCategories) ? ramCategories : []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                            </select>
+                                            <button
+                                                type="button"
+                                                className="px-3 py-2 bg-[#F3F4F6] text-[#4B5563] rounded-xl hover:bg-[#E5E7EB] transition-colors"
+                                                onClick={() => { setActiveCategoryType('ram'); setShowCategoryModal(true); }}
+                                                title="Add New RAM"
+                                                tabIndex={-1}
+                                            >
+                                                <Plus size={20} />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* ROM */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-[#374151] mb-1">ROM</label>
+                                        <div className="flex gap-2">
+                                            <select
+                                                className="w-full px-4 py-2 rounded-xl border border-[#D1D5DB] focus:outline-none focus:ring-2 focus:ring-[#0065F4] transition-shadow bg-white"
+                                                value={formData.rom_id}
+                                                onChange={e => setFormData({ ...formData, rom_id: e.target.value })}
+                                            >
+                                                <option value="">None</option>
+                                                {(Array.isArray(romCategories) ? romCategories : []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                            </select>
+                                            <button
+                                                type="button"
+                                                className="px-3 py-2 bg-[#F3F4F6] text-[#4B5563] rounded-xl hover:bg-[#E5E7EB] transition-colors"
+                                                onClick={() => { setActiveCategoryType('rom'); setShowCategoryModal(true); }}
+                                                title="Add New ROM"
+                                                tabIndex={-1}
+                                            >
+                                                <Plus size={20} />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Color */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-[#374151] mb-1">Color</label>
+                                        <div className="flex gap-2">
+                                            <select
+                                                className="w-full px-4 py-2 rounded-xl border border-[#D1D5DB] focus:outline-none focus:ring-2 focus:ring-[#0065F4] transition-shadow bg-white"
+                                                value={formData.color_id}
+                                                onChange={e => setFormData({ ...formData, color_id: e.target.value })}
+                                            >
+                                                <option value="">None</option>
+                                                {(Array.isArray(colorCategories) ? colorCategories : []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                            </select>
+                                            <button
+                                                type="button"
+                                                className="px-3 py-2 bg-[#F3F4F6] text-[#4B5563] rounded-xl hover:bg-[#E5E7EB] transition-colors"
+                                                onClick={() => { setActiveCategoryType('color'); setShowCategoryModal(true); }}
+                                                title="Add New Color"
+                                                tabIndex={-1}
+                                            >
+                                                <Plus size={20} />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
+
+                                <div>
+                                    <label className="block text-sm font-medium text-[#374151] mb-1">IMEI Number (Optional)</label>
+                                    <input
+                                        className="w-full px-4 py-2 rounded-xl border border-[#D1D5DB] focus:outline-none focus:ring-2 focus:ring-[#0065F4] font-mono text-sm uppercase transition-shadow"
+                                        value={formData.imei}
+                                        onChange={e => setFormData({ ...formData, imei: e.target.value })}
+                                        placeholder="Enter IMEI..."
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4 pt-2">
                                     <div>
                                         <label className="block text-sm font-medium text-[#374151] mb-1">Buy Price (Cost)</label>
                                         <input
@@ -660,10 +837,10 @@ export default function ProductsPage() {
                 {showCategoryModal && (
                     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
                         <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 animate-in fade-in zoom-in duration-200">
-                            <h2 className="text-lg font-bold text-[#111827] mb-4">Add New Category</h2>
+                            <h2 className="text-lg font-bold text-[#111827] mb-4">Add New {activeCategoryType === 'product' ? 'Model' : activeCategoryType.toUpperCase()}</h2>
                             <form onSubmit={handleAddCategory} className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-[#374151] mb-1">Category Name</label>
+                                    <label className="block text-sm font-medium text-[#374151] mb-1">Name</label>
                                     <input
                                         className="w-full px-4 py-2 rounded-xl border border-[#D1D5DB] focus:outline-none focus:ring-2 focus:ring-[#0065F4] transition-shadow"
                                         required
@@ -684,7 +861,7 @@ export default function ProductsPage() {
                 <CategoryManagerModal
                     isOpen={showCategoryManager}
                     onClose={() => setShowCategoryManager(false)}
-                    type="product"
+                    type={activeCategoryType}
                     onUpdate={fetchCategories}
                 />
             </main>

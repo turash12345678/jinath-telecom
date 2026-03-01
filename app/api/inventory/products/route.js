@@ -3,13 +3,21 @@ import { validateProduct, sanitizeInput } from '@/lib/validation';
 
 export async function GET(request) {
     try {
-        const result = await db.execute(`
-            SELECT products.*, categories.name as category_name,
+        const result = await db.execute({
+            sql: `
+            SELECT products.*,
+            categories.name as category_name,
+            c_ram.name as ram_name,
+            c_rom.name as rom_name,
+            c_color.name as color_name,
             (SELECT COALESCE(SUM(quantity), 0) FROM sale_items WHERE item_id = products.id AND item_type = 'product') as sales_count
             FROM products 
             LEFT JOIN categories ON products.category_id = categories.id 
+            LEFT JOIN categories c_ram ON products.ram_id = c_ram.id
+            LEFT JOIN categories c_rom ON products.rom_id = c_rom.id
+            LEFT JOIN categories c_color ON products.color_id = c_color.id
             ORDER BY products.name
-        `);
+        `});
 
         // Ensure all numbers are properly formatted
         const formattedRows = result.rows?.map(row => ({
@@ -39,7 +47,7 @@ export async function GET(request) {
 export async function POST(request) {
     try {
         const body = await request.json();
-        const { name, category_id, buy_price, sell_price, stock_quantity, created_at } = body;
+        const { name, category_id, ram_id, rom_id, color_id, imei, buy_price, sell_price, stock_quantity, created_at } = body;
 
         // Sanitize inputs
         const sanitizedName = sanitizeInput(name);
@@ -98,10 +106,14 @@ export async function POST(request) {
 
         // POST Update
         const result = await db.execute({
-            sql: 'INSERT INTO products (name, category_id, buy_price, sell_price, stock_quantity, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+            sql: 'INSERT INTO products (name, category_id, ram_id, rom_id, color_id, imei, buy_price, sell_price, stock_quantity, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             args: [
                 sanitizedName,
                 category_id || null,
+                ram_id || null,
+                rom_id || null,
+                color_id || null,
+                imei || null,
                 parseFloat(buy_price),
                 parseFloat(sell_price),
                 (stock_quantity === '' || stock_quantity === undefined || stock_quantity === null) ? 0 : parseInt(stock_quantity),
@@ -115,8 +127,8 @@ export async function POST(request) {
         // [NEW] Log Initial Stock
         if (initialQty > 0) {
             await db.execute({
-                sql: `INSERT INTO stock_logs (product_id, quantity, remaining_quantity, buy_price, note, created_at)
-                      VALUES (?, ?, ?, ?, 'Initial Stock', ?)`,
+                sql: `INSERT INTO stock_logs(product_id, quantity, remaining_quantity, buy_price, note, created_at)
+        VALUES(?, ?, ?, ?, 'Initial Stock', ?)`,
                 args: [id, initialQty, initialQty, parseFloat(buy_price), created_at || new Date().toISOString()]
             });
         }
@@ -144,7 +156,7 @@ export async function POST(request) {
 export async function PUT(request) {
     try {
         const body = await request.json();
-        const { id, name, category_id, buy_price, sell_price, stock_quantity, created_at } = body;
+        const { id, name, category_id, ram_id, rom_id, color_id, imei, buy_price, sell_price, stock_quantity, created_at } = body;
 
         if (!id) {
             return new Response(JSON.stringify({ error: 'Product ID is required' }), { status: 400 });
@@ -154,24 +166,32 @@ export async function PUT(request) {
         const newStock = (stock_quantity === '' || stock_quantity === undefined || stock_quantity === null) ? 0 : parseInt(stock_quantity);
 
         // [NEW] Fetch Old Stock to calculate difference
-        const currentProduct = await db.execute({
+        const currentProductRes = await db.execute({
             sql: 'SELECT stock_quantity FROM products WHERE id = ?',
             args: [id]
         });
-        const oldStock = currentProduct.rows[0]?.stock_quantity || 0;
+        const oldStock = currentProductRes.rows[0]?.stock_quantity || 0;
 
         const result = await db.execute({
-            sql: `UPDATE products SET 
-                  name = ?, 
-                  category_id = ?, 
-                  buy_price = ?, 
-                  sell_price = ?, 
-                  stock_quantity = ?, 
-                  created_at = ?
-                  WHERE id = ?`,
+            sql: `UPDATE products SET
+        name = ?,
+            category_id = ?,
+            ram_id = ?,
+            rom_id = ?,
+            color_id = ?,
+            imei = ?,
+            buy_price = ?,
+            sell_price = ?,
+            stock_quantity = ?,
+            created_at = ?
+                WHERE id = ? `,
             args: [
                 sanitizedName,
                 category_id || null,
+                ram_id || null,
+                rom_id || null,
+                color_id || null,
+                imei || null,
                 parseFloat(buy_price),
                 parseFloat(sell_price),
                 newStock,
@@ -188,8 +208,8 @@ export async function PUT(request) {
         const diff = newStock - oldStock;
         if (diff > 0) {
             await db.execute({
-                sql: `INSERT INTO stock_logs (product_id, quantity, remaining_quantity, buy_price, note, created_at)
-                      VALUES (?, ?, ?, ?, 'Restock', ?)`,
+                sql: `INSERT INTO stock_logs(product_id, quantity, remaining_quantity, buy_price, note, created_at)
+        VALUES(?, ?, ?, ?, 'Restock', ?)`,
                 // Use CURRENT timestamp for restock, unless user somehow provided a specific restock date (not supported in UI yet)
                 args: [id, diff, diff, parseFloat(buy_price), new Date().toISOString()]
             });
