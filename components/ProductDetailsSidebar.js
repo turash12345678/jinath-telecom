@@ -111,59 +111,52 @@ export default function ProductDetailsSidebar({ product, onClose }) {
                 </div>
 
                 {/* Header */}
-                <div className="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 shrink-0">
-                    <div>
-                        <h2 className="text-lg md:text-xl font-bold text-gray-900">{product.name}</h2>
-                        <p className="text-xs md:text-sm text-gray-500">Inventory Details</p>
+                <div className="px-5 py-5 border-b border-gray-100 bg-white shrink-0">
+                    <div className="flex justify-between items-start mb-3">
+                        <div>
+                            <h2 className="text-xl font-bold text-gray-900 mb-1">{product.name}</h2>
+                            <p className="text-sm text-gray-500">Inventory Details</p>
+                        </div>
+                        <button
+                            onClick={onClose}
+                            className="p-2 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-600 transition-colors bg-gray-50"
+                        >
+                            <X size={20} />
+                        </button>
                     </div>
-                    <button
-                        onClick={onClose}
-                        className="p-2 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-600 transition-colors"
-                    >
-                        <X size={20} />
-                    </button>
+
+                    {/* Integrated Specs Banner */}
+                    <div className="flex flex-wrap gap-2">
+                        {product.category_name && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100 cursor-default" title="Model">
+                                {product.category_name}
+                            </span>
+                        )}
+                        {(product.ram_name || product.rom_name) && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100 cursor-default" title="RAM / ROM">
+                                {product.ram_name || 'N/A'}/{product.rom_name || 'N/A'}
+                            </span>
+                        )}
+                        {product.color_name && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 cursor-default" title="Color">
+                                {product.color_name}
+                            </span>
+                        )}
+                        {product.imei && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-mono font-medium bg-gray-100 text-gray-600 border border-gray-200 cursor-default" title="IMEI Number">
+                                IMEI: {product.imei}
+                            </span>
+                        )}
+                    </div>
                 </div>
 
-                {/* Content - Scrollable */}
-                <div className="flex-1 overflow-y-auto p-5">
-
-                    {/* Device Specs Details */}
-                    <div className="mb-6 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                        <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                            <span className="w-1 h-4 bg-purple-500 rounded-full"></span>
-                            Device Details
-                        </h3>
-                        <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
-                            <div>
-                                <span className="text-gray-500 block text-xs mb-0.5">Model</span>
-                                <span className="font-medium text-gray-900">{product.category_name || 'N/A'}</span>
-                            </div>
-                            <div>
-                                <span className="text-gray-500 block text-xs mb-0.5">RAM</span>
-                                <span className="font-medium text-gray-900">{product.ram_name || 'N/A'}</span>
-                            </div>
-                            <div>
-                                <span className="text-gray-500 block text-xs mb-0.5">ROM</span>
-                                <span className="font-medium text-gray-900">{product.rom_name || 'N/A'}</span>
-                            </div>
-                            <div>
-                                <span className="text-gray-500 block text-xs mb-0.5">Color</span>
-                                <span className="font-medium text-gray-900">{product.color_name || 'N/A'}</span>
-                            </div>
-                            {product.imei && (
-                                <div className="col-span-2 mt-1 pt-2 border-t border-gray-50">
-                                    <span className="text-gray-500 block text-xs mb-0.5">IMEI Number</span>
-                                    <span className="font-mono text-gray-700 bg-gray-50 px-2 py-1 rounded-md block">{product.imei}</span>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
+                {/* Content - Scrollable History */}
+                <div className="flex-1 overflow-y-auto p-6">
                     {/* Batch History Table */}
-                    <div className="mb-6">
-                        <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <div className="mb-6 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+                        <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
                             <span className="w-1 h-4 bg-blue-500 rounded-full"></span>
-                            Batch History
+                            Restock & Sales History
                         </h3>
 
                         <div className="border border-gray-100 rounded-xl overflow-hidden">

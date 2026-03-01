@@ -453,13 +453,21 @@ export default function ProductsPage() {
                                             </span>
                                         </td>
                                         <td className="p-4 text-xs text-[#4B5563]">
-                                            <div className="flex flex-col gap-1">
-                                                {product.ram_name || product.rom_name ? (
-                                                    <span>{product.ram_name || 'N/A'}/{product.rom_name || 'N/A'}</span>
-                                                ) : null}
-                                                {product.imei ? (
-                                                    <span className="text-gray-400 font-mono">{product.imei}</span>
-                                                ) : null}
+                                            <div className="flex flex-col gap-1.5 items-start">
+                                                {product.ram_name || product.rom_name || product.color_name ? (
+                                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                                        {product.ram_name && <span>{product.ram_name}</span>}
+                                                        {(product.ram_name && product.rom_name) && <span className="text-indigo-300">/</span>}
+                                                        {product.rom_name && <span>{product.rom_name}</span>}
+                                                        {((product.ram_name || product.rom_name) && product.color_name) && <span className="text-indigo-300">|</span>}
+                                                        {product.color_name && <span>{product.color_name}</span>}
+                                                    </span>
+                                                ) : <span className="text-gray-400 italic">No Specs</span>}
+                                                {product.imei && (
+                                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-medium bg-gray-100 text-gray-600 border border-gray-200">
+                                                        IMEI: {product.imei}
+                                                    </span>
+                                                )}
                                             </div>
                                         </td>
                                         <td className="p-4 text-sm text-[#4B5563]">
