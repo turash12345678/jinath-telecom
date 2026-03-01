@@ -365,6 +365,11 @@ export default function ProductsPage() {
                             product={selectedProduct}
                             onClose={() => setSelectedProduct(null)}
                             onEditRequest={() => startEdit(selectedProduct)}
+                            categories={categories}
+                            ramCategories={ramCategories}
+                            romCategories={romCategories}
+                            colorCategories={colorCategories}
+                            onUpdate={fetchProducts}
                         />
                     </div>
                     <div className="flex flex-col gap-3 w-full md:w-auto">

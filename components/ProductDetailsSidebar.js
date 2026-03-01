@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { X, Pencil, Trash2, Check, ChevronLeft } from 'lucide-react';
 
-export default function ProductDetailsSidebar({ product, onClose, onUpdate, onEditRequest }) {
+export default function ProductDetailsSidebar({ product, onClose, onUpdate, onEditRequest, categories = [], ramCategories = [], romCategories = [], colorCategories = [] }) {
     const [logs, setLogs] = useState([]);
     const [totalEarned, setTotalEarned] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -51,22 +51,60 @@ export default function ProductDetailsSidebar({ product, onClose, onUpdate, onEd
             buy_price: log.buy_price,
             sell_price: log.sell_price || 0,
             created_at: log.created_at ? log.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+            // Product fields (to allow editing categories alongside restocks)
+            category_id: product.category_id || '',
+            ram_id: product.ram_id || '',
+            rom_id: product.rom_id || '',
+            color_id: product.color_id || ''
         });
     };
 
     const handleEditSave = async (logId) => {
         try {
-            const res = await fetch('/api/inventory/logs', {
+            // 1. Update Restock Log
+            const logRes = await fetch('/api/inventory/logs', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: logId, ...editForm }),
+                body: JSON.stringify({
+                    id: logId,
+                    quantity: editForm.quantity,
+                    buy_price: editForm.buy_price,
+                    sell_price: editForm.sell_price,
+                    created_at: editForm.created_at
+                }),
             });
-            const data = await res.json();
-            if (data.success) {
+            const logData = await logRes.json();
+
+            // 2. Update Product Categories if they were changed
+            const hasCategoryChanges =
+                editForm.category_id != product.category_id ||
+                editForm.ram_id != product.ram_id ||
+                editForm.rom_id != product.rom_id ||
+                editForm.color_id != product.color_id;
+
+            if (hasCategoryChanges) {
+                await fetch('/api/inventory/products', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: product.id,
+                        name: product.name, // Keep existing name
+                        category_id: editForm.category_id || null,
+                        ram_id: editForm.ram_id || null,
+                        rom_id: editForm.rom_id || null,
+                        color_id: editForm.color_id || null
+                    })
+                });
+
+                // Let the parent component know so it refreshes the product UI
+                if (onUpdate) onUpdate();
+            }
+
+            if (logData.success) {
                 setEditingLogId(null);
                 fetchLogs();
             } else {
-                alert('Update failed: ' + (data.error || 'Unknown error'));
+                alert('Update failed: ' + (logData.error || 'Unknown error'));
             }
         } catch (err) {
             alert('Error: ' + err.message);
@@ -229,6 +267,53 @@ export default function ProductDetailsSidebar({ product, onClose, onUpdate, onEd
                                                                         onChange={e => setEditForm(f => ({ ...f, sell_price: parseFloat(e.target.value) }))}
                                                                         className="w-full text-sm font-medium border border-blue-200 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-800 bg-white"
                                                                     />
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="grid grid-cols-2 gap-4 pt-1">
+                                                                <div>
+                                                                    <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1.5 tracking-wider">Model</label>
+                                                                    <select
+                                                                        className="w-full text-sm font-medium border border-blue-200 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-800 bg-white"
+                                                                        value={editForm.category_id}
+                                                                        onChange={e => setEditForm(f => ({ ...f, category_id: e.target.value }))}
+                                                                    >
+                                                                        <option value="">None</option>
+                                                                        {(Array.isArray(categories) ? categories : []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                                                    </select>
+                                                                </div>
+                                                                <div>
+                                                                    <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1.5 tracking-wider">Color</label>
+                                                                    <select
+                                                                        className="w-full text-sm font-medium border border-blue-200 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-800 bg-white"
+                                                                        value={editForm.color_id}
+                                                                        onChange={e => setEditForm(f => ({ ...f, color_id: e.target.value }))}
+                                                                    >
+                                                                        <option value="">None</option>
+                                                                        {(Array.isArray(colorCategories) ? colorCategories : []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                                                    </select>
+                                                                </div>
+                                                                <div>
+                                                                    <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1.5 tracking-wider">RAM</label>
+                                                                    <select
+                                                                        className="w-full text-sm font-medium border border-blue-200 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-800 bg-white"
+                                                                        value={editForm.ram_id}
+                                                                        onChange={e => setEditForm(f => ({ ...f, ram_id: e.target.value }))}
+                                                                    >
+                                                                        <option value="">None</option>
+                                                                        {(Array.isArray(ramCategories) ? ramCategories : []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                                                    </select>
+                                                                </div>
+                                                                <div>
+                                                                    <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1.5 tracking-wider">ROM</label>
+                                                                    <select
+                                                                        className="w-full text-sm font-medium border border-blue-200 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-800 bg-white"
+                                                                        value={editForm.rom_id}
+                                                                        onChange={e => setEditForm(f => ({ ...f, rom_id: e.target.value }))}
+                                                                    >
+                                                                        <option value="">None</option>
+                                                                        {(Array.isArray(romCategories) ? romCategories : []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                                                    </select>
                                                                 </div>
                                                             </div>
 
