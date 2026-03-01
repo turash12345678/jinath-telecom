@@ -16,6 +16,7 @@ interface ProductItemProps {
   onPriceOptionChange: (option: 'fixed' | 'custom') => void;
   onCustomPriceChange: (value: string) => void;
   stock: number | null;
+  specLabel?: string; // e.g. "4GB/64GB · Black"
 }
 
 export function ProductItem({
@@ -29,9 +30,10 @@ export function ProductItem({
   onQuantityChange,
   priceOption,
   customPrice,
-  onPriceOptionChange, // Re-added this
+  onPriceOptionChange,
   onCustomPriceChange,
-  stock
+  stock,
+  specLabel
 }: ProductItemProps) {
 
   // Determine if out of stock
@@ -72,15 +74,20 @@ export function ProductItem({
           )}
         </div>
 
-        {/* Name */}
-        <div className="flex-1 flex justify-between items-center min-w-0">
-          <span className="font-roboto font-medium text-[22px] text-[#0F1828] break-words whitespace-normal leading-tight">
-            {name}
-          </span>
+        {/* Name + Spec Label */}
+        <div className="flex-1 flex justify-between items-center min-w-0 gap-2">
+          <div className="flex-1 min-w-0">
+            <p className="font-roboto font-medium text-[22px] text-[#0F1828] break-words whitespace-normal leading-tight">
+              {name}
+            </p>
+            {specLabel && (
+              <p className="text-[12px] text-[#7A8C9E] font-medium mt-0.5 leading-tight">{specLabel}</p>
+            )}
+          </div>
 
-          {/* Default View: Buying Price only (as requested) */}
+          {/* Default View: Buying Price only */}
           {!isSelected && (
-            <span className="font-inter font-medium text-[14px] text-[#495564]">
+            <span className="font-inter font-medium text-[14px] text-[#495564] shrink-0">
               ৳{buyingPrice}
             </span>
           )}

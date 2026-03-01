@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import Fuse from "fuse.js";
 import { Header } from "./Header";
-import { ProductItem } from "./ProductItem";
+import { ProductGroup } from "./ProductGroup";
 import { BottomBar } from "./BottomBar";
 
 // Product Data Structure Explanation:
@@ -15,13 +15,19 @@ import { BottomBar } from "./BottomBar";
 // Dummy Data
 interface Product {
   id: string;
+  originalId: string;
   productName: string;
   productImage: string | null;
   buyingPrice: number;
   sellingPrice: number;
   type?: 'product' | 'service';
   salesCount: number;
-  stockQuantity: number | null; // null for services or unlimited
+  stockQuantity: number | null;
+  categoryName?: string | null;
+  ramName?: string | null;
+  romName?: string | null;
+  colorName?: string | null;
+  imei?: string | null;
 }
 
 export default function PosContainer() {
@@ -51,7 +57,12 @@ export default function PosContainer() {
             sellingPrice: Number(p.sell_price) || 0,
             type: 'product',
             salesCount: p.sales_count || 0,
-            stockQuantity: p.stock_quantity !== undefined ? Number(p.stock_quantity) : 0
+            stockQuantity: p.stock_quantity !== undefined ? Number(p.stock_quantity) : 0,
+            categoryName: p.category_name || null,
+            ramName: p.ram_name || null,
+            romName: p.rom_name || null,
+            colorName: p.color_name || null,
+            imei: p.imei || null,
           }));
           combinedData = [...combinedData, ...mappedProducts];
         }
@@ -249,51 +260,46 @@ export default function PosContainer() {
           {/* List Container (Frame 15) */}
           <div className="flex-1 bg-white rounded-[38px] p-1 space-y-1 overflow-y-auto no-scrollbar pb-[calc(140px+env(safe-area-inset-bottom))] mt-2">
             {(() => {
-              // Sorting Logic:
-              // 1. Split into "Selected" and "Unselected".
-              // 2. "Selected" items ALWAYS appear at the top (Pinned).
-              // 3. "Unselected" items are filtered by search term.
-
               const term = searchTerm.toLowerCase();
 
-              // Fuse.js Fuzzy Search Configuration
+              // Fuse.js fuzzy search
               const fuseOptions = {
-                keys: ['productName', 'buyingPrice', 'sellingPrice'],
-                threshold: 0.4, // Matches somewhat loosely (0.0 = perfect, 1.0 = match anything)
-                distance: 100,  // Distance for fuzzy match
+                keys: ['productName', 'categoryName', 'ramName', 'romName', 'colorName'],
+                threshold: 0.4,
+                distance: 100,
               };
-
               const fuse = new Fuse(products, fuseOptions);
 
-              let displayList: Product[] = [];
-
+              let displayList: typeof products;
               if (term) {
-                // Search Mode: Fuzzy Search using Fuse.js
-                const result = fuse.search(term);
-                displayList = result.map(r => r.item);
+                displayList = fuse.search(term).map(r => r.item);
               } else {
-                // Default Mode: Pin Selected Items to Top
-                const pinnedItems = products.filter(p => selectedIds.has(p.id));
-                const unselectedItems = products.filter(p => !selectedIds.has(p.id));
-                displayList = [...pinnedItems, ...unselectedItems];
+                const pinned = products.filter(p => selectedIds.has(p.id));
+                const rest = products.filter(p => !selectedIds.has(p.id));
+                displayList = [...pinned, ...rest];
               }
 
-              return displayList.map((product) => (
-                <ProductItem
-                  key={product.id}
-                  id={product.id}
-                  name={product.productName}
-                  buyingPrice={product.buyingPrice} // Pass cost price
-                  sellingPrice={product.sellingPrice} // Pass sell price
-                  stock={product.stockQuantity} // Pass stock info
-                  isSelected={selectedIds.has(product.id)}
-                  quantity={quantities[product.id] || 1}
-                  onSelect={() => handleSelect(product.id)}
-                  onQuantityChange={(delta) => handleQuantityChange(product.id, delta)}
-                  priceOption={priceOptions[product.id] || 'fixed'}
-                  customPrice={customPrices[product.id] || ""}
-                  onPriceOptionChange={(opt) => handlePriceOptionChange(product.id, opt)}
-                  onCustomPriceChange={(val) => handleCustomPriceChange(product.id, val)}
+              // Group by productName
+              const groups: Map<string, typeof products> = new Map();
+              displayList.forEach(p => {
+                const key = p.productName;
+                if (!groups.has(key)) groups.set(key, []);
+                groups.get(key)!.push(p);
+              });
+
+              return Array.from(groups.entries()).map(([groupName, variants]) => (
+                <ProductGroup
+                  key={groupName}
+                  groupName={groupName}
+                  variants={variants}
+                  selectedIds={selectedIds}
+                  quantities={quantities}
+                  priceOptions={priceOptions}
+                  customPrices={customPrices}
+                  onSelect={(id) => handleSelect(id)}
+                  onQuantityChange={(id, delta) => handleQuantityChange(id, delta)}
+                  onPriceOptionChange={(id, opt) => handlePriceOptionChange(id, opt)}
+                  onCustomPriceChange={(id, val) => handleCustomPriceChange(id, val)}
                 />
               ));
             })()}
