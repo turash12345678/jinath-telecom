@@ -244,14 +244,12 @@ export async function DELETE(request) {
                         });
 
                         // B. Restore FIFO Logs (allocations)
-                        // Find allocations for this sale item
                         const allocationsResult = await transaction.execute({
                             sql: "SELECT stock_log_id, quantity FROM sale_batch_allocations WHERE sale_item_id = ?",
                             args: [item.id]
                         });
 
                         for (const alloc of allocationsResult.rows) {
-                            // Restore quantity to the specific batch/log
                             await transaction.execute({
                                 sql: "UPDATE stock_logs SET remaining_quantity = remaining_quantity + ? WHERE id = ?",
                                 args: [alloc.quantity, alloc.stock_log_id]
@@ -267,15 +265,9 @@ export async function DELETE(request) {
                 }
             }
 
-            // 3. Delete sale items
+            // 3. Soft delete — mark as deleted, do NOT remove from DB
             await transaction.execute({
-                sql: "DELETE FROM sale_items WHERE sale_id = ?",
-                args: [id]
-            });
-
-            // 4. Delete sale record
-            await transaction.execute({
-                sql: "DELETE FROM sales WHERE id = ?",
+                sql: "UPDATE sales SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP WHERE id = ?",
                 args: [id]
             });
 
@@ -295,3 +287,4 @@ export async function DELETE(request) {
         return new Response(JSON.stringify({ error: 'Failed to delete sale' }), { status: 500 });
     }
 }
+

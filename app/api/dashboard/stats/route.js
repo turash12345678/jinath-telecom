@@ -33,7 +33,7 @@ export async function GET(request) {
 
         // --- HELPER: Calculate Stats for a Range ---
         const getStats = async (start, end, userFilterId = null) => {
-            let salesSql = "SELECT SUM(total_amount) as total, COUNT(*) as count FROM sales WHERE sale_date >= ? AND sale_date <= ?";
+            let salesSql = "SELECT SUM(total_amount) as total, COUNT(*) as count FROM sales WHERE (is_deleted IS NULL OR is_deleted = 0) AND sale_date >= ? AND sale_date <= ?";
             let salesArgs = [start, end];
 
             if (userFilterId) {
@@ -109,7 +109,7 @@ export async function GET(request) {
 
         // D. Daily Sales History
         const dailyHistoryRes = await db.execute({
-            sql: `SELECT id, total_amount, sale_date as created_at, payment_method FROM sales WHERE sale_date >= ? AND sale_date <= ? ORDER BY sale_date DESC`,
+            sql: `SELECT id, total_amount, sale_date as created_at, payment_method FROM sales WHERE (is_deleted IS NULL OR is_deleted = 0) AND sale_date >= ? AND sale_date <= ? ORDER BY sale_date DESC`,
             args: [selectedStart, selectedEnd]
         });
 

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Menu, LogOut, LayoutDashboard, Package, Wrench, ShoppingCart } from 'lucide-react';
+import { Menu, LogOut, LayoutDashboard, Package, Wrench, ShoppingCart, History } from 'lucide-react';
 
 export default function Sidebar() {
     const pathname = usePathname();
@@ -28,7 +28,9 @@ export default function Sidebar() {
         { name: 'Products', path: '/inventory/products', icon: Package },
         { name: 'Services', path: '/inventory/services', icon: Wrench },
         { name: 'New Sale (POS)', path: '/pos', icon: ShoppingCart },
+        { name: 'Sales History', path: '/sales-history', icon: History },
     ];
+
 
     return (
         <>
