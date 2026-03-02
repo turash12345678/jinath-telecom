@@ -18,7 +18,8 @@ export default function ProductsPage() {
     const [stickyDate, setStickyDate] = useState(new Date().toISOString().split('T')[0]);
 
     // Layer 2: Smart Detection & Restock
-    const [existingProduct, setExistingProduct] = useState(null); // If typed name matches existing
+    const [existingProduct, setExistingProduct] = useState(null); // Exact spec match (restock)
+    const [nameOnlyMatch, setNameOnlyMatch] = useState(null);     // Same name, different specs (new variant)
 
     // Layer 3: Sidebar
     const [selectedProduct, setSelectedProduct] = useState(null);
@@ -149,6 +150,7 @@ export default function ProductsPage() {
         const nameMatch = products.find(p => p.name.toLowerCase() === trimmedName);
         if (!nameMatch) {
             setExistingProduct(null);
+            setNameOnlyMatch(null);
             return;
         }
 
@@ -163,11 +165,13 @@ export default function ProductsPage() {
         if (specMatch) {
             // Exact variant already exists → Restock mode
             setExistingProduct(specMatch);
+            setNameOnlyMatch(null);
             // Auto-fill model/category from matched variant
             if (!formData.category_id) setFormData(prev => ({ ...prev, category_id: specMatch.category_id }));
         } else {
             // Same name but different specs → New variant, not a restock
             setExistingProduct(null);
+            setNameOnlyMatch(nameMatch); // Show info that a variant with this name exists
         }
     }, [formData.name, formData.ram_id, formData.rom_id, formData.color_id, showModal, isEditMode, products]);
 
@@ -411,9 +415,8 @@ export default function ProductsPage() {
                             </button>
                         </div>
 
-                        {/* Filters & Sorting Toolbar - scrollable on mobile */}
+                        {/* Filters & Sorting Toolbar */}
                         <div className="flex flex-nowrap md:flex-wrap items-center gap-2 bg-white p-2 rounded-xl border border-[#E5E7EB] shadow-sm overflow-x-auto pb-2">
-                            {/* Sort */}
                             <select
                                 className="px-3 py-1.5 rounded-lg border border-[#E5E7EB] text-sm focus:outline-none focus:ring-2 focus:ring-[#0065F4] shrink-0"
                                 value={sortOption}
@@ -423,8 +426,6 @@ export default function ProductsPage() {
                                 <option value="date_asc">Oldest First</option>
                                 <option value="sales_desc">Most Sold</option>
                             </select>
-
-                            {/* Category Filter */}
                             <select
                                 className="px-3 py-1.5 rounded-lg border border-[#E5E7EB] text-sm focus:outline-none focus:ring-2 focus:ring-[#0065F4] shrink-0"
                                 value={filterCategory}
@@ -433,8 +434,6 @@ export default function ProductsPage() {
                                 <option value="">All Categories</option>
                                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                             </select>
-
-                            {/* Month Filter */}
                             <div className="flex items-center gap-1 border border-[#E5E7EB] rounded-lg px-2 py-1.5 bg-white shrink-0">
                                 <span className="text-xs font-medium text-gray-500">Month:</span>
                                 <input
@@ -448,7 +447,7 @@ export default function ProductsPage() {
                     </div>
                 </header>
 
-                {/* ======= DESKTOP TABLE (hidden on mobile) ======= */}
+                {/* ======= DESKTOP TABLE ======= */}
                 <div className="hidden md:block bg-white rounded-3xl shadow-sm border border-[#E5E7EB] overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
@@ -463,109 +462,87 @@ export default function ProductsPage() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#E5E7EB]">
-                                {filteredProducts.map((product, index) => (
-                                    <tr
-                                        key={product.id}
-                                        className={`transition-colors ${highlightedIndex === index ? 'bg-blue-50 ring-1 ring-blue-200' : 'hover:bg-[#F9FAFB]'}`}
-                                    >
-                                        <td
-                                            className="p-4 text-sm font-medium text-[#111827] cursor-pointer hover:text-[#0065F4] transition-colors"
-                                            onClick={() => setSelectedProduct(product)}
-                                        >
-                                            {product.name}
-                                        </td>
-                                        <td className="p-4 text-sm text-[#4B5563]">
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-800">
-                                                {product.category_name || 'N/A'}
-                                            </span>
-                                        </td>
-                                        <td className="p-4 text-sm text-[#4B5563]">
-                                            <span className="font-extrabold mr-1">৳</span>{product.buy_price}
-                                        </td>
-                                        <td className="p-4 text-sm font-bold text-[#10B981]">
-                                            <span className="font-extrabold mr-1">৳</span>{product.sell_price}
-                                        </td>
-                                        <td className="p-4 text-sm text-[#4B5563]">
-                                            {product.stock_quantity < 10 ? (
-                                                <span className="text-red-600 font-bold">{product.stock_quantity} (Low)</span>
-                                            ) : product.stock_quantity}
-                                        </td>
-                                        <td className="p-4 text-right">
-                                            <div className="flex items-center justify-end gap-2">
-                                                <button onClick={() => setSelectedProduct(product)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View & Edit Details">
-                                                    <Pencil size={18} />
-                                                </button>
-                                                <button onClick={() => handleDelete(product.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
-                                                    <Trash2 size={18} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
+                                {(() => {
+                                    // Deduplicate by name — show each product name once
+                                    const seen = new Set();
+                                    return filteredProducts
+                                        .filter(p => {
+                                            if (seen.has(p.name)) return false;
+                                            seen.add(p.name);
+                                            return true;
+                                        })
+                                        .map((product, index) => {
+                                            const sameNameAll = filteredProducts.filter(fp => fp.name === product.name);
+                                            const totalStock = sameNameAll.reduce((s, fp) => s + fp.stock_quantity, 0);
+                                            const variantCount = sameNameAll.length;
+                                            return (
+                                                <tr key={product.id} className={`transition-colors ${highlightedIndex === index ? 'bg-blue-50 ring-1 ring-blue-200' : 'hover:bg-[#F9FAFB]'}`}>
+                                                    <td className="p-4 text-sm font-medium text-[#111827] cursor-pointer hover:text-[#0065F4] transition-colors" onClick={() => setSelectedProduct(product)}>
+                                                        <div>{product.name}</div>
+                                                        {variantCount > 1 && <div className="text-[10px] text-gray-400 mt-0.5">{variantCount} variants</div>}
+                                                    </td>
+                                                    <td className="p-4 text-sm text-[#4B5563]">
+                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-800">{product.category_name || 'N/A'}</span>
+                                                    </td>
+                                                    <td className="p-4 text-sm text-[#4B5563]"><span className="font-extrabold mr-1">৳</span>{product.buy_price}</td>
+                                                    <td className="p-4 text-sm font-bold text-[#10B981]"><span className="font-extrabold mr-1">৳</span>{product.sell_price}</td>
+                                                    <td className="p-4 text-sm text-[#4B5563]">
+                                                        {totalStock < 10 ? <span className="text-red-600 font-bold">{totalStock} (Low)</span> : totalStock}
+                                                    </td>
+                                                    <td className="p-4 text-right">
+                                                        <div className="flex items-center justify-end gap-2">
+                                                            <button onClick={() => setSelectedProduct(product)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><Pencil size={18} /></button>
+                                                            <button onClick={() => handleDelete(product.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={18} /></button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        });
+                                })()}
                                 {filteredProducts.length === 0 && (
-                                    <tr>
-                                        <td colSpan="6" className="p-8 text-center text-[#6B7280]">
-                                            {products.length === 0 ? 'No products found.' : 'No filtered products found.'}
-                                        </td>
-                                    </tr>
+                                    <tr><td colSpan="6" className="p-8 text-center text-[#6B7280]">{products.length === 0 ? 'No products found.' : 'No filtered products found.'}</td></tr>
                                 )}
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                {/* ======= MOBILE CARD VIEW (hidden on desktop) ======= */}
+                {/* ======= MOBILE CARD VIEW ======= */}
                 <div className="md:hidden flex flex-col gap-3 pb-24">
                     {filteredProducts.length === 0 ? (
-                        <div className="text-center text-gray-400 py-12 bg-white rounded-2xl">
-                            {products.length === 0 ? 'No products yet.' : 'No matching products.'}
-                        </div>
-                    ) : filteredProducts.map((product, index) => (
-                        <div
-                            key={product.id}
-                            className={`rounded-2xl p-4 shadow-sm border ${highlightedIndex === index ? 'bg-blue-50 border-[#0065F4]' : 'bg-white border-gray-100'}`}
-                        >
-                            <div className="flex justify-between items-start mb-2">
-                                <div>
-                                    <button
-                                        className="font-semibold text-[#111827] text-base hover:text-[#0065F4] text-left"
-                                        onClick={() => setSelectedProduct(product)}
-                                    >
-                                        {product.name}
-                                    </button>
-                                    <div className="mt-1">
-                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
-                                            {product.category_name || 'Uncategorized'}
-                                        </span>
+                        <div className="text-center text-gray-400 py-12 bg-white rounded-2xl">{products.length === 0 ? 'No products yet.' : 'No matching products.'}</div>
+                    ) : (() => {
+                        const seen = new Set();
+                        return filteredProducts
+                            .filter(p => { if (seen.has(p.name)) return false; seen.add(p.name); return true; })
+                            .map((product) => {
+                                const sameNameAll = filteredProducts.filter(fp => fp.name === product.name);
+                                const totalStock = sameNameAll.reduce((s, fp) => s + fp.stock_quantity, 0);
+                                const variantCount = sameNameAll.length;
+                                return (
+                                    <div key={product.id} className="rounded-2xl p-4 shadow-sm border bg-white border-gray-100">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <div>
+                                                <button className="font-semibold text-[#111827] text-base hover:text-[#0065F4] text-left" onClick={() => setSelectedProduct(product)}>{product.name}</button>
+                                                <div className="flex gap-1.5 mt-1 flex-wrap">
+                                                    {product.category_name && <span className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">{product.category_name}</span>}
+                                                    {variantCount > 1 && <span className="text-xs text-gray-400">{variantCount} variants</span>}
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-1">
+                                                <button onClick={() => setSelectedProduct(product)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"><Pencil size={16} /></button>
+                                                <button onClick={() => handleDelete(product.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 size={16} /></button>
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-gray-100">
+                                            <div><p className="text-[10px] text-gray-400 uppercase">Buy</p><p className="text-sm font-semibold text-gray-700">৳{product.buy_price}</p></div>
+                                            <div><p className="text-[10px] text-gray-400 uppercase">Sell</p><p className="text-sm font-bold text-emerald-600">৳{product.sell_price}</p></div>
+                                            <div><p className="text-[10px] text-gray-400 uppercase">Stock</p><p className={`text-sm font-bold ${totalStock < 10 ? 'text-red-500' : 'text-gray-700'}`}>{totalStock}{totalStock < 10 ? ' ⚠' : ''}</p></div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="flex gap-1">
-                                    <button onClick={() => setSelectedProduct(product)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View & Edit Details">
-                                        <Pencil size={16} />
-                                    </button>
-                                    <button onClick={() => handleDelete(product.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
-                                        <Trash2 size={16} />
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-gray-100">
-                                <div>
-                                    <p className="text-[10px] text-gray-400 uppercase tracking-wide">Buy</p>
-                                    <p className="text-sm font-semibold text-gray-700">৳{product.buy_price}</p>
-                                </div>
-                                <div>
-                                    <p className="text-[10px] text-gray-400 uppercase tracking-wide">Sell</p>
-                                    <p className="text-sm font-bold text-emerald-600">৳{product.sell_price}</p>
-                                </div>
-                                <div>
-                                    <p className="text-[10px] text-gray-400 uppercase tracking-wide">Stock</p>
-                                    <p className={`text-sm font-bold ${product.stock_quantity < 10 ? 'text-red-500' : 'text-gray-700'}`}>
-                                        {product.stock_quantity}{product.stock_quantity < 10 ? ' ⚠' : ''}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+                                );
+                            });
+                    })()}
                 </div>
 
                 {/* ======= FLOATING ADD BUTTON (mobile only) ======= */}
@@ -604,7 +581,7 @@ export default function ProductsPage() {
                                         disabled={isEditMode && existingProduct} // Can't rename in restock mode effectively? Actually standard edit mode handles this.
                                     />
 
-                                    {/* Layer 2: Smart Restock Info Box */}
+                                    {/* Layer 2: Exact match → Restock info */}
                                     {existingProduct && !isEditMode && (
                                         <div
                                             className="mt-3 p-4 bg-indigo-50 border border-indigo-200 rounded-xl flex items-center justify-between cursor-pointer hover:bg-indigo-100 transition-all shadow-sm group"
@@ -625,6 +602,13 @@ export default function ProductsPage() {
                                             <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-indigo-600 shadow-sm group-hover:scale-110 transition-transform">
                                                 <ExternalLink size={16} />
                                             </div>
+                                        </div>
+                                    )}
+
+                                    {/* Name-only match → New variant info */}
+                                    {nameOnlyMatch && !existingProduct && !isEditMode && (
+                                        <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                                            <p className="text-xs font-bold text-amber-700">⚠ এই নামে product আছে ({products.filter(p => p.name.toLowerCase() === formData.name.trim().toLowerCase()).length} variant)। ভিন্ন Spec দিলে নতুন variant হিসেবে যোগ হবে।</p>
                                         </div>
                                     )}
                                 </div>
