@@ -131,6 +131,8 @@ export default function ProductsPage() {
     };
 
     // Smart Detection Logic
+    // Matches by name + spec combo (RAM + ROM + Color).
+    // If name matches but specs differ → it's a NEW variant, not a restock.
     useEffect(() => {
         if (!showModal || isEditMode) {
             setExistingProduct(null);
@@ -143,15 +145,31 @@ export default function ProductsPage() {
             return;
         }
 
-        const match = products.find(p => p.name.toLowerCase() === trimmedName);
-        if (match) {
-            setExistingProduct(match);
-            // Auto-fill category if not set
-            if (!formData.category_id) setFormData(prev => ({ ...prev, category_id: match.category_id }));
+        // First check: does this name exist at all?
+        const nameMatch = products.find(p => p.name.toLowerCase() === trimmedName);
+        if (!nameMatch) {
+            setExistingProduct(null);
+            return;
+        }
+
+        // Second check: does the EXACT spec combo (RAM + ROM + Color) also match?
+        const specMatch = products.find(p =>
+            p.name.toLowerCase() === trimmedName &&
+            String(p.ram_id || '') === String(formData.ram_id || '') &&
+            String(p.rom_id || '') === String(formData.rom_id || '') &&
+            String(p.color_id || '') === String(formData.color_id || '')
+        );
+
+        if (specMatch) {
+            // Exact variant already exists → Restock mode
+            setExistingProduct(specMatch);
+            // Auto-fill model/category from matched variant
+            if (!formData.category_id) setFormData(prev => ({ ...prev, category_id: specMatch.category_id }));
         } else {
+            // Same name but different specs → New variant, not a restock
             setExistingProduct(null);
         }
-    }, [formData.name, showModal, isEditMode, products]);
+    }, [formData.name, formData.ram_id, formData.rom_id, formData.color_id, showModal, isEditMode, products]);
 
     const handleSubmit = async (e) => {
         if (e) e.preventDefault();

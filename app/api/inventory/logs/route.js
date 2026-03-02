@@ -12,7 +12,19 @@ export async function GET(request) {
         }
 
         const logsResult = await db.execute({
-            sql: `SELECT * FROM stock_logs WHERE product_id = ? ORDER BY created_at DESC`,
+            sql: `SELECT 
+                    sl.*,
+                    p.ram_id, p.rom_id, p.color_id,
+                    c_ram.name as ram_name,
+                    c_rom.name as rom_name,
+                    c_color.name as color_name
+                  FROM stock_logs sl
+                  JOIN products p ON sl.product_id = p.id
+                  LEFT JOIN categories c_ram ON p.ram_id = c_ram.id
+                  LEFT JOIN categories c_rom ON p.rom_id = c_rom.id
+                  LEFT JOIN categories c_color ON p.color_id = c_color.id
+                  WHERE sl.product_id = ? 
+                  ORDER BY sl.created_at DESC`,
             args: [productId]
         });
 
