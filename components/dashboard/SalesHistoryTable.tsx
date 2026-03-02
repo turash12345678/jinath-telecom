@@ -1,7 +1,7 @@
 "use client";
 
+import React, { useState } from "react";
 import { Trash2, AlertCircle, ChevronDown, ChevronRight, ShoppingBag } from "lucide-react";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface Sale {
@@ -91,7 +91,7 @@ export function SalesHistoryTable({ sales, onDeleteSale, canEdit = true }: Sales
                                 const isExpanded = expandedIds.has(sale.id);
 
                                 return (
-                                    <>
+                                    <React.Fragment key={sale.id}>
                                         <tr
                                             key={sale.id}
                                             className="cursor-pointer hover:bg-gray-50/50 transition-colors border-b border-gray-50 last:border-0"
@@ -169,7 +169,7 @@ export function SalesHistoryTable({ sales, onDeleteSale, canEdit = true }: Sales
                                                 </td>
                                             </tr>
                                         )}
-                                    </>
+                                    </React.Fragment>
                                 );
                             })
                         ) : (
