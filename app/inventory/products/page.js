@@ -771,4 +771,3 @@ export default function ProductsPage() {
         </div>
     );
 }
-export const dynamic = 'force-dynamic';
