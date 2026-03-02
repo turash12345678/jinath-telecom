@@ -26,6 +26,13 @@ export default function ProductDetailsSidebar({ product, onClose, onUpdate, cate
     const [editingLogId, setEditingLogId] = useState(null);
     const [editForm, setEditForm] = useState({});
 
+    // Helper for formatting dates nicely
+    const formatDate = (dateStr) => {
+        if (!dateStr) return '';
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+    };
+
     // When product changes, fetch all variants with the same name
     useEffect(() => {
         if (!product) return;
