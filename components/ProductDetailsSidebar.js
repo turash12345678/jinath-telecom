@@ -3,6 +3,13 @@
 import { useState, useEffect } from 'react';
 import { X, ChevronDown, ChevronRight, Pencil, Trash2, Check, Filter } from 'lucide-react';
 
+// Helper for formatting dates nicely - defined at module scope for reliability
+const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+};
+
 export default function ProductDetailsSidebar({ product, onClose, onUpdate, categories = [], ramCategories = [], romCategories = [], colorCategories = [] }) {
     // All variants of the same model (same product name)
     const [variants, setVariants] = useState([]);
@@ -25,13 +32,6 @@ export default function ProductDetailsSidebar({ product, onClose, onUpdate, cate
     // Edit state
     const [editingLogId, setEditingLogId] = useState(null);
     const [editForm, setEditForm] = useState({});
-
-    // Helper for formatting dates nicely
-    const formatDate = (dateStr) => {
-        if (!dateStr) return '';
-        const d = new Date(dateStr);
-        return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
-    };
 
     // When product changes, fetch all variants with the same name
     useEffect(() => {
