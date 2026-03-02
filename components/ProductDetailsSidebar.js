@@ -305,7 +305,16 @@ export default function ProductDetailsSidebar({ product, onClose, onUpdate, onEd
                                                     <>
                                                         <td className="px-3 py-3 text-gray-600">
                                                             {new Date(log.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-                                                            <div className="text-[10px] text-gray-400 uppercase tracking-wide">{log.note || 'Restock'}</div>
+                                                            <div className="text-[10px] text-gray-400 uppercase tracking-wide flex flex-wrap gap-1 mt-0.5">
+                                                                {log.note === 'Initial Stock' ? (
+                                                                    <span className="bg-blue-50 text-blue-500 px-1.5 py-0.5 rounded font-semibold">Initial</span>
+                                                                ) : (
+                                                                    <span className="bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">Restock</span>
+                                                                )}
+                                                                {log.ram_name && <span className="bg-indigo-50 text-indigo-600 px-1.5 py-0.5 rounded">{log.ram_name}</span>}
+                                                                {log.rom_name && <span className="bg-purple-50 text-purple-600 px-1.5 py-0.5 rounded">{log.rom_name}</span>}
+                                                                {log.color_name && <span className="bg-pink-50 text-pink-600 px-1.5 py-0.5 rounded">{log.color_name}</span>}
+                                                            </div>
                                                         </td>
                                                         <td className="px-2 py-3 text-right font-medium text-gray-900">{log.quantity}</td>
                                                         <td className="px-2 py-3 text-right text-gray-600">

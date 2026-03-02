@@ -147,7 +147,7 @@ export default function CategoryManagerModal({ isOpen, onClose, onUpdate }) {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[70] backdrop-blur-sm p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[130] backdrop-blur-sm p-4">
             <div className="bg-white rounded-2xl w-full max-w-lg flex flex-col max-h-[85vh] shadow-xl animate-in fade-in zoom-in duration-200">
 
                 {/* Header */}
@@ -168,8 +168,8 @@ export default function CategoryManagerModal({ isOpen, onClose, onUpdate }) {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`pb-3 text-sm font-semibold whitespace-nowrap transition-colors border-b-2 ${activeTab === tab.id
-                                    ? 'border-blue-600 text-blue-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                                ? 'border-blue-600 text-blue-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700'
                                 }`}
                         >
                             {tab.label}

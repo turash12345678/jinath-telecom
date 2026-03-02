@@ -70,18 +70,30 @@ export async function POST(request) {
             });
         }
 
-        // Check for duplicate product name
+        // Check for duplicate: same name AND same spec combo (RAM + ROM + Color)
+        // Same name with DIFFERENT specs = new variant → allowed
+        // Same name with SAME specs = true duplicate → blocked
         const duplicateCheck = await db.execute({
-            sql: 'SELECT id FROM products WHERE LOWER(name) = LOWER(?) LIMIT 1',
-            args: [sanitizedName]
+            sql: `SELECT id FROM products 
+                  WHERE LOWER(name) = LOWER(?) 
+                  AND (ram_id IS ? OR ram_id = ?)
+                  AND (rom_id IS ? OR rom_id = ?)
+                  AND (color_id IS ? OR color_id = ?)
+                  LIMIT 1`,
+            args: [
+                sanitizedName,
+                ram_id || null, ram_id || null,
+                rom_id || null, rom_id || null,
+                color_id || null, color_id || null,
+            ]
         });
 
         if (duplicateCheck.rows && duplicateCheck.rows.length > 0) {
             return new Response(JSON.stringify({
-                error: 'Product already exists',
-                details: ['A product with this name already exists']
+                error: 'Product variant already exists',
+                details: ['A product with this exact name and spec combination (RAM/ROM/Color) already exists']
             }), {
-                status: 409, // Conflict
+                status: 409,
                 headers: { 'Content-Type': 'application/json' },
             });
         }
